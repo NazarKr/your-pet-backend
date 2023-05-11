@@ -1,0 +1,339 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "0.0",
+    "title": "Your-pet Api docs",
+    "description": "Api docs",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "consumes": ["application/json", "multipart/form-data"],
+  "produces": ["application/json"],
+  "servers": [
+    { "url": "https://your-pet-backend-jfrs.onrender.com" },
+    { "url": "http://localhost:8989" }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "User authorization and update endpoints"
+    }
+  ],
+  "paths": {
+    "/api/users/register": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User registration",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "description": "Registration's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (invalid request body)",
+            "content": {}
+          },
+          "409": {
+            "description": "Email in use",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User login",
+        "parameters": [],
+        "security": [],
+        "requestBody": {
+          "description": "Login's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User is logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email or password is wrong",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/users/current": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get current user",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": [],
+        "responses": {
+          "200": {
+            "description": "Got current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/users/update": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update users profile",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User profile update object with at least one field",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Users profile updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Empty object",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/users/logout": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Logout user",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "Successfully logout",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RegistrationRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "description": "User's password",
+            "example": "qwerty123"
+          }
+        }
+      },
+      "RegistrationResponse": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          }
+        },
+        "example": { "email": "1@gmail.com" }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Authorization token"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string",
+                "description": "User's id"
+              },
+              "name": {
+                "type": "string or null",
+                "description": "User's name"
+              },
+              "email": {
+                "type": "string",
+                "description": "User's email",
+                "format": "email"
+              },
+              "birthday": {
+                "type": "string or null",
+                "description": "User's birthday in iso format"
+              },
+              "phone": {
+                "type": "string or null",
+                "description": "User's phone in international format +380..."
+              },
+              "city": {
+                "type": "string or null",
+                "description": "User's city"
+              },
+              "avatarUrl": {
+                "type": "string",
+                "description": "User's avatar url"
+              },
+              "verify": {
+                "type": "boolean",
+                "description": "Email verification"
+              }
+            }
+          }
+        },
+        "example": {
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDVkNDE5MWM3YzUzZWIwMmZhYzQxMGMiLCJuYW1lIjpudWxsLCJlbWFpbCI6Im1hZG5lenp6NUBnbWFpbC5jb20iLCJiaXJ0aGRheSI6bnVsbCwicGhvbmUiOm51bGwsImNpdHkiOm51bGwsImF2YXRhclVybCI6Ii8vd3d3LmdyYXZhdGFyLmNvbS9hdmF0YXIvZWFjNTQxYmQ4ZDJkOGI0MWRhNzhmYmRlZTBiMWNmMjQiLCJ2ZXJpZnkiOmZhbHNlLCJpYXQiOjE2ODM4MzYzNDcsImV4cCI6MTY4MzkxOTE0N30.a0O_jKSHq_3wbEzsx8iVKdEKCEhyBg21KJXTRYokNiQ",
+          "user": {
+            "_id": "645d4191c7c53eb02fac410c",
+            "name": null,
+            "email": "madnezzz5@gmail.com",
+            "birthday": null,
+            "phone": null,
+            "city": null,
+            "avatarUrl": "//www.gravatar.com/avatar/eac541bd8d2d8b41da78fbdee0b1cf24",
+            "verify": false
+          }
+        }
+      },
+      "CurrentResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's id"
+          },
+          "name": {
+            "type": "string or null",
+            "description": "User's name"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "birthday": {
+            "type": "string or null",
+            "description": "User's birthday in iso format"
+          },
+          "phone": {
+            "type": "string or null",
+            "description": "User's phone in international format +380..."
+          },
+          "city": {
+            "type": "string or null",
+            "description": "User's city"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "User's avatar url"
+          },
+          "verify": {
+            "type": "boolean",
+            "description": "Email verification"
+          }
+        },
+        "example": {
+          "name": "Some name",
+          "email": "some-mail@mail.com",
+          "birthday": "2011-10-05T14:48:00.000Z",
+          "phone": "+380123456789",
+          "city": "Melitopol",
+          "avatarUrl": "//www.gravatar.com/avatar/eac541bd8d2d8b41da78fbdee0b1cf24",
+          "verify": false,
+          "_id": "645d579dfedbaba1c5473ef2"
+        }
+      },
+      "UpdateRequest": {
+        "type": "object",
+        "required": ["email"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          }
+        },
+        "example": {
+          "name": "Some name"
+        }
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
