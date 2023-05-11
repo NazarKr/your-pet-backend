@@ -8,13 +8,13 @@ mongoose.Promise = global.Promise;
 const { PORT = 3000, DB_HOST, DB_HOST_TEST, RENDER_BASE_URL } = process.env;
 
 mongoose
-  .connect(RENDER_BASE_URL, {
+  .connect(DB_HOST_TEST, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running. Use our API on port: ${PORT}`);
+    app.listen(RENDER_BASE_URL, () => {
+      console.log(`Server running. Use our API on ${RENDER_BASE_URL}`);
     });
   })
   .catch(error => {
