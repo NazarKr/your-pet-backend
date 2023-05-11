@@ -13,7 +13,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    app.listen(RENDER_BASE_URL, () => {
+    app.listen(PORT, () => {
       console.log(`Server running. Use our API on ${RENDER_BASE_URL}`);
     });
   })
