@@ -176,7 +176,7 @@ const userRefresh = async (req, res) => {
 
     const user = await User.findById(_id);
 
-    const isExist = await User.findOne({ token });
+    const isExist = await User.findOne({ refreshToken: token });
 
     if (!isExist) {
       throw httpError(403, 'Invalid token');
@@ -196,7 +196,7 @@ const userRefresh = async (req, res) => {
     const accesToken = jwt.sign(payload, ACCES_SECRET, { expiresIn: '2m' });
     const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
 
-    res.status(200).json(accesToken, refreshToken);
+    res.status(200).json({ accesToken, refreshToken });
   } catch (error) {
     throw httpError(403, error.message);
   }

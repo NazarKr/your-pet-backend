@@ -35,7 +35,6 @@ const user = new Schema(
     phone: {
       type: String,
       match: phoneRegex,
-      unique: true,
       default: null,
     },
     city: {
