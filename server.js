@@ -5,10 +5,10 @@ const app = require('./app');
 
 mongoose.Promise = global.Promise;
 
-const { PORT = 3000, DB_HOST, DB_HOST_TEST } = process.env;
+const { PORT = 3000, DB_HOST, DB_HOST_TEST, RENDER_BASE_URL } = process.env;
 
 mongoose
-  .connect(DB_HOST_TEST, {
+  .connect(RENDER_BASE_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
