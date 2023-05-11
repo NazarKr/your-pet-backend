@@ -118,8 +118,9 @@ const userLoginShema = Joi.object({
 /**
  * Схема валидации обновления профиля пользователя.
  */
+
 const userUpdateShema = Joi.object({
-  name: Joi.string().min(3).min(20).messages({
+  name: Joi.string().min(3).max(20).messages({
     'string.empty': `"Name" cannot be empty`,
     'string.base': `"Name" must be string`,
     'string.min': `"Name" should have a minimum length of {#limit}`,
@@ -154,7 +155,7 @@ const userUpdateShema = Joi.object({
     'string.min': `"City" should have a minimum length of {#limit}`,
     'string.max': `"City" should have a maximum length of {#limit}`,
   }),
-});
+}).min(1);
 
 user.post('save', handleMongooseError);
 

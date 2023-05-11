@@ -55,56 +55,56 @@ const registerUser = async (req, res) => {
   });
 };
 
-/**
- * ============================ Верификация пользователя
- */
-const verify = async (req, res) => {
-  const { verifycationToken } = req.params;
+// /**
+//  * ============================ Верификация пользователя
+//  */
+// const verify = async (req, res) => {
+//   const { verifycationToken } = req.params;
 
-  const user = await User.findOne({ verifycationToken });
+//   const user = await User.findOne({ verifycationToken });
 
-  if (!user) {
-    throw HttpError(404, 'User not found');
-  }
+//   if (!user) {
+//     throw HttpError(404, 'User not found');
+//   }
 
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verifycationToken: null,
-  });
+//   await User.findByIdAndUpdate(user._id, {
+//     verify: true,
+//     verifycationToken: null,
+//   });
 
-  res.status(200).json({
-    message: `Verification successful`,
-  });
-};
+//   res.status(200).json({
+//     message: `Verification successful`,
+//   });
+// };
 
-/**
- * ============================ Повторная отсылка письма верификации пользователя
- */
-const reVerify = async (req, res) => {
-  const { email } = req.body;
+// /**
+//  * ============================ Повторная отсылка письма верификации пользователя
+//  */
+// const reVerify = async (req, res) => {
+//   const { email } = req.body;
 
-  const user = await User.findOne({ email });
+//   const user = await User.findOne({ email });
 
-  if (!user) {
-    throw HttpError(404, 'Email not found');
-  }
+//   if (!user) {
+//     throw HttpError(404, 'Email not found');
+//   }
 
-  if (user.verify) {
-    throw HttpError(400, 'Verification has already been passed');
-  }
+//   if (user.verify) {
+//     throw HttpError(400, 'Verification has already been passed');
+//   }
 
-  const verifycationEmail = {
-    to: email,
-    subject: 'Verifycation email',
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verifycationToken}">Click here to verify your email</a>`,
-  };
+//   const verifycationEmail = {
+//     to: email,
+//     subject: 'Verifycation email',
+//     html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verifycationToken}">Click here to verify your email</a>`,
+//   };
 
-  await sendEmail.nodemailer(verifycationEmail);
+//   await sendEmail.nodemailer(verifycationEmail);
 
-  res.status(200).json({
-    message: `Verification email sent`,
-  });
-};
+//   res.status(200).json({
+//     message: `Verification email sent`,
+//   });
+// };
 
 /**
  * ============================ Login пользователя
@@ -118,9 +118,9 @@ const loginUser = async (req, res) => {
     throw httpError(401, `Email or password is wrong`);
   }
 
-  if (!user.verify) {
-    throw httpError(401, `Email not veryfi`);
-  }
+  // if (!user.verify) {
+  //   throw httpError(401, `Email not veryfi`);
+  // }
 
   const checkPassword = await bcrypt.compare(password, user.password);
 
@@ -156,8 +156,6 @@ const getCurrentUser = async (req, res) => {
   const { name, email, birthday, phone, city, avatarUrl, verify, _id } =
     req.user;
 
-  console.log(req.user);
-
   res
     .status(200)
     .json({ name, email, birthday, phone, city, avatarUrl, verify, _id });
@@ -169,7 +167,16 @@ const getCurrentUser = async (req, res) => {
 const userUpdate = async (req, res) => {
   const { _id } = req.user;
 
-  const result = await User.findByIdAndUpdate(_id, req.body, { new: true });
+  const result = await User.findByIdAndUpdate(_id, req.body, {
+    new: true,
+    fields: {
+      token: 0,
+      password: 0,
+      verifycationToken: 0,
+      createdAt: 0,
+      updatedAt: 0,
+    },
+  });
 
   res.status(200).json(result);
 };
@@ -211,8 +218,8 @@ const updateAvatar = async (req, res) => {
 
 module.exports = {
   register: ctrlWrapper(registerUser),
-  verify: ctrlWrapper(verify),
-  reVerify: ctrlWrapper(reVerify),
+  // verify: ctrlWrapper(verify),
+  // reVerify: ctrlWrapper(reVerify),
   login: ctrlWrapper(loginUser),
   current: ctrlWrapper(getCurrentUser),
   update: ctrlWrapper(userUpdate),
