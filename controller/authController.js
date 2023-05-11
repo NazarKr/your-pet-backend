@@ -15,7 +15,7 @@ const {
   sendEmail,
 } = require('../helpers');
 const HttpError = require('../helpers/httpError');
-const { SECRET, BASE_URL } = process.env;
+const { ACCES_SECRET, REFRESH_SECRET, BASE_URL } = process.env;
 const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 /**
@@ -33,78 +33,78 @@ const registerUser = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
 
-  const verifycationToken = nanoid();
+  // const verifycationToken = nanoid();
 
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
     avatarUrl,
-    verifycationToken,
+    // verifycationToken,
   });
 
-  const verifycationEmail = {
-    to: email,
-    subject: 'Verifycation email',
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verifycationToken}" >Click here to verify your email</a>`,
-  };
+  // const verifycationEmail = {
+  //   to: email,
+  //   subject: 'Verifycation email',
+  //   html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verifycationToken}" >Click here to verify your email</a>`,
+  // };
 
-  await sendEmail(verifycationEmail);
+  // await sendEmail(verifycationEmail);
 
   res.status(201).json({
     email: newUser.email,
   });
 };
 
-/**
- * ============================ Верификация пользователя
- */
-const verify = async (req, res) => {
-  const { verifycationToken } = req.params;
+// /**
+//  * ============================ Верификация пользователя
+//  */
+// const verify = async (req, res) => {
+//   const { verifycationToken } = req.params;
 
-  const user = await User.findOne({ verifycationToken });
+//   const user = await User.findOne({ verifycationToken });
 
-  if (!user) {
-    throw HttpError(404, 'User not found');
-  }
+//   if (!user) {
+//     throw HttpError(404, 'User not found');
+//   }
 
-  await User.findByIdAndUpdate(user._id, {
-    verify: true,
-    verifycationToken: null,
-  });
+//   await User.findByIdAndUpdate(user._id, {
+//     verify: true,
+//     verifycationToken: null,
+//   });
 
-  res.status(200).json({
-    message: `Verification successful`,
-  });
-};
+//   res.status(200).json({
+//     message: `Verification successful`,
+//   });
+// };
 
-/**
- * ============================ Повторная отсылка письма верификации пользователя
- */
-const reVerify = async (req, res) => {
-  const { email } = req.body;
+// /**
+//  * ============================ Повторная отсылка письма верификации пользователя
+//  */
+// const reVerify = async (req, res) => {
+//   const { email } = req.body;
 
-  const user = await User.findOne({ email });
+//   const user = await User.findOne({ email });
 
-  if (!user) {
-    throw HttpError(404, 'Email not found');
-  }
+//   if (!user) {
+//     throw HttpError(404, 'Email not found');
+//   }
 
-  if (user.verify) {
-    throw HttpError(400, 'Verification has already been passed');
-  }
+//   if (user.verify) {
+//     throw HttpError(400, 'Verification has already been passed');
+//   }
 
-  const verifycationEmail = {
-    to: email,
-    subject: 'Verifycation email',
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verifycationToken}">Click here to verify your email</a>`,
-  };
+//   const verifycationEmail = {
+//     to: email,
+//     subject: 'Verifycation email',
+//     html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verifycationToken}">Click here to verify your email</a>`,
+//   };
 
-  await sendEmail.nodemailer(verifycationEmail);
+//   await sendEmail.nodemailer(verifycationEmail);
 
-  res.status(200).json({
-    message: `Verification email sent`,
-  });
-};
+//   res.status(200).json({
+//     message: `Verification email sent`,
+//   });
+// };
 
 /**
  * ============================ Login пользователя
@@ -118,9 +118,9 @@ const loginUser = async (req, res) => {
     throw httpError(401, `Email or password is wrong`);
   }
 
-  if (!user.verify) {
-    throw httpError(401, `Email not veryfi`);
-  }
+  // if (!user.verify) {
+  //   throw httpError(401, `Email not veryfi`);
+  // }
 
   const checkPassword = await bcrypt.compare(password, user.password);
 
@@ -139,12 +139,14 @@ const loginUser = async (req, res) => {
     verify: user.verify,
   };
 
-  const token = jwt.sign(payload, SECRET, { expiresIn: '23h' });
+  const accesToken = jwt.sign(payload, ACCES_SECRET, { expiresIn: '2m' });
+  const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
 
-  await User.findByIdAndUpdate(user._id, { token });
+  await User.findByIdAndUpdate(user._id, { accesToken, refreshToken });
 
   res.status(200).json({
-    token,
+    accesToken,
+    refreshToken,
     user: payload,
   });
 };
@@ -164,6 +166,43 @@ const getCurrentUser = async (req, res) => {
 };
 
 /**
+ * ============================ Refresh токена пользователя
+ */
+const userRefresh = async (req, res) => {
+  const { refreshToken: token } = req.body;
+
+  try {
+    const { _id } = jwt.verify(token, REFRESH_SECRET);
+
+    const user = await User.findById(_id);
+
+    const isExist = await User.findOne({ token });
+
+    if (!isExist) {
+      throw httpError(403, 'Invalid token');
+    }
+
+    const payload = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      birthday: user.birthday,
+      phone: user.phone,
+      city: user.city,
+      avatarUrl: user.avatarUrl,
+      verify: user.verify,
+    };
+
+    const accesToken = jwt.sign(payload, ACCES_SECRET, { expiresIn: '2m' });
+    const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
+
+    res.status(200).json(accesToken, refreshToken);
+  } catch (error) {
+    throw httpError(403, error.message);
+  }
+};
+
+/**
  * ============================ Обновление профиля пользователя
  */
 const userUpdate = async (req, res) => {
@@ -180,7 +219,7 @@ const userUpdate = async (req, res) => {
 const logout = async (req, res) => {
   const { _id } = req.user;
 
-  await User.findByIdAndUpdate(_id, { token: null });
+  await User.findByIdAndUpdate(_id, { accesToken: null, refreshToken: null });
 
   res.status(200).json({ message: `Successfully logout` });
 };
@@ -211,10 +250,11 @@ const updateAvatar = async (req, res) => {
 
 module.exports = {
   register: ctrlWrapper(registerUser),
-  verify: ctrlWrapper(verify),
-  reVerify: ctrlWrapper(reVerify),
+  // verify: ctrlWrapper(verify),
+  // reVerify: ctrlWrapper(reVerify),
   login: ctrlWrapper(loginUser),
   current: ctrlWrapper(getCurrentUser),
+  refresh: ctrlWrapper(userRefresh),
   update: ctrlWrapper(userUpdate),
   logout: ctrlWrapper(logout),
   updateAvatar: ctrlWrapper(updateAvatar),

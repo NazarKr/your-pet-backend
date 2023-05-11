@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const { httpError } = require('../helpers');
 const { User } = require('../schemas');
-const { SECRET } = process.env;
+const { ACCES_SECRET } = process.env;
 
 const authentication = async (req, res, next) => {
   const { authorization = '' } = req.headers;
@@ -14,11 +14,11 @@ const authentication = async (req, res, next) => {
   }
 
   try {
-    const response = jwt.verify(token, SECRET);
+    const response = jwt.verify(token, ACCES_SECRET);
 
     const user = await User.findById(response._id);
 
-    if (!user || !user.token) {
+    if (!user || !user.accesToken) {
       next(httpError(401));
     }
     req.user = user;

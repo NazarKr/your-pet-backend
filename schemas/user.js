@@ -44,7 +44,11 @@ const user = new Schema(
       max: [20, 'City should have a maximum length of 20'],
       default: null,
     },
-    token: {
+    accesToken: {
+      type: String,
+      default: null,
+    },
+    refreshToken: {
       type: String,
       default: null,
     },
@@ -117,6 +121,16 @@ const userLoginShema = Joi.object({
 });
 
 /**
+ * Схема валидации refresh.
+ */
+const refreshShema = Joi.object({
+  refreshToken: Joi.string().required().messages({
+    'any.required': `Refresh token is required field`,
+    'string.empty': `Refresh token cannot be empty`,
+  }),
+});
+
+/**
  * Схема валидации обновления профиля пользователя.
  */
 const userUpdateShema = Joi.object({
@@ -155,13 +169,14 @@ const userUpdateShema = Joi.object({
     'string.min': `"City" should have a minimum length of {#limit}`,
     'string.max': `"City" should have a maximum length of {#limit}`,
   }),
-});
+}).min(1);
 
 user.post('save', handleMongooseError);
 
 const userValidation = {
   userRegisterShema,
   emailShema,
+  refreshShema,
   userLoginShema,
   userUpdateShema,
 };
