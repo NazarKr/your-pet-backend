@@ -129,6 +129,7 @@ const loginUser = async (req, res) => {
     avatarUrl: user.avatarUrl,
     pets: user.pets,
     notices: user.notices,
+    favorite: user.favorite,
     verify: user.verify,
   };
 
@@ -156,6 +157,7 @@ const getCurrentUser = async (req, res) => {
     avatarUrl,
     pets,
     notices,
+    favorite,
     verify,
   } = req.user;
 
@@ -169,6 +171,7 @@ const getCurrentUser = async (req, res) => {
     avatarUrl,
     pets,
     notices,
+    favorite,
     verify,
   });
 };
