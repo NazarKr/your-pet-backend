@@ -136,6 +136,8 @@ const loginUser = async (req, res) => {
     phone: user.phone,
     city: user.city,
     avatarUrl: user.avatarUrl,
+    pets: user.pets,
+    notices: user.notices,
     verify: user.verify,
   };
 
@@ -153,12 +155,31 @@ const loginUser = async (req, res) => {
  * ============================ Текущий пользователь
  */
 const getCurrentUser = async (req, res) => {
-  const { name, email, birthday, phone, city, avatarUrl, verify, _id } =
-    req.user;
+  const {
+    _id,
+    name,
+    email,
+    birthday,
+    phone,
+    city,
+    avatarUrl,
+    pets,
+    notices,
+    verify,
+  } = req.user;
 
-  res
-    .status(200)
-    .json({ name, email, birthday, phone, city, avatarUrl, verify, _id });
+  res.status(200).json({
+    _id,
+    name,
+    email,
+    birthday,
+    phone,
+    city,
+    avatarUrl,
+    pets,
+    notices,
+    verify,
+  });
 };
 
 /**
