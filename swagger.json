@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "0.1",
+    "version": "0.2",
     "title": "Your-pet Api docs",
     "description": "Api docs",
     "license": {
@@ -152,6 +152,40 @@
           "400": {
             "description": "Empty object",
             "content": {}
+          }
+        }
+      }
+    },
+    "/api/users/avatars": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update users avatar",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Multipart/form-data object with avatar field for .jpg or .png file",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvatarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAvatarResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
           }
         }
       }
@@ -364,6 +398,34 @@
         },
         "example": {
           "name": "Some name"
+        }
+      },
+      "UpdateAvatarRequest": {
+        "required": true,
+        "properties": {
+          "avatar": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "example": {
+          "avatar": "some-file.jpg"
+        }
+      },
+      "UpdateAvatarResponse": {
+        "properties": {
+          "avatarUrl": {
+            "type": "string",
+            "description": "Image link"
+          },
+          "message": {
+            "type": "string",
+            "description": "Avatar successfully updated"
+          }
+        },
+        "example": {
+          "avatarUrl": "https://res.cloudinary.com/dqejymgnk/image/upload/v1683897828/avatar/645e24c526c08528afa6d247_photo_2023-01-29_14-06-46.jpg.jpg",
+          "message": "Avatar successfully changed"
         }
       }
     },

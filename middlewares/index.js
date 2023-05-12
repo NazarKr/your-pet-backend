@@ -1,9 +1,9 @@
 const isValidId = require('./isValidId');
 const authentication = require('./authentication');
-const upload = require('./upload');
+const imageUpload = require('./imageUpload');
 
 module.exports = {
   isValidId,
   authentication,
-  upload,
+  imageUpload,
 };
