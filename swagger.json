@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "0.0",
+    "version": "0.1",
     "title": "Your-pet Api docs",
     "description": "Api docs",
     "license": {
@@ -247,6 +247,24 @@
               "verify": {
                 "type": "boolean",
                 "description": "Email verification"
+              },
+              "pets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "description": "Pet's object",
+                  "properties": {}
+                },
+                "description": "User's pets"
+              },
+              "notices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "description": "Notice object",
+                  "properties": {}
+                },
+                "description": "User's notices"
               }
             }
           }
@@ -261,7 +279,9 @@
             "phone": null,
             "city": null,
             "avatarUrl": "//www.gravatar.com/avatar/eac541bd8d2d8b41da78fbdee0b1cf24",
-            "verify": false
+            "verify": false,
+            "pets": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"],
+            "notices": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"]
           }
         }
       },
@@ -300,9 +320,28 @@
           "verify": {
             "type": "boolean",
             "description": "Email verification"
+          },
+          "pets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Pet's object",
+              "properties": {}
+            },
+            "description": "User's pets"
+          },
+          "notices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "Notice object",
+              "properties": {}
+            },
+            "description": "User's notices"
           }
         },
         "example": {
+          "_id": "645d579dfedbaba1c5473ef2",
           "name": "Some name",
           "email": "some-mail@mail.com",
           "birthday": "2011-10-05T14:48:00.000Z",
@@ -310,17 +349,17 @@
           "city": "Melitopol",
           "avatarUrl": "//www.gravatar.com/avatar/eac541bd8d2d8b41da78fbdee0b1cf24",
           "verify": false,
-          "_id": "645d579dfedbaba1c5473ef2"
+          "pets": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"],
+          "notices": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"]
         }
       },
       "UpdateRequest": {
         "type": "object",
-        "required": ["email"],
+        "required": ["somePropertie"],
         "properties": {
-          "email": {
-            "type": "string",
-            "description": "User's email",
-            "format": "email"
+          "somePropertie": {
+            "type": "propertie type",
+            "description": "Propertie to change"
           }
         },
         "example": {

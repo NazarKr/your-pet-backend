@@ -51,6 +51,14 @@ const user = new Schema(
       type: String,
       required: [true, 'Avatar url is required'],
     },
+    pets: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'pets' }],
+      default: [],
+    },
+    notices: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'notices' }],
+      default: [],
+    },
     verify: {
       type: Boolean,
       default: false,
