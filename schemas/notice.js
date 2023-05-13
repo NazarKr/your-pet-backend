@@ -3,47 +3,129 @@ const Joi = require('joi');
 
 const { handleMongooseError } = require('../helpers');
 
-const noticeSchema = new Schema({
-  title: {
-    type: String,
-    required: [true, 'Title is required'],
+const noticeSchema = new Schema(
+  {
+    category: {
+      type: String,
+      enum: ['sell', 'lost/found', 'in good hands'],
+      required: [true, 'Category is required'],
+    },
+    title: {
+      type: String,
+      required: [true, 'Title is required'],
+    },
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+    },
+    birthday: {
+      type: String,
+      required: [true, 'Birthday is required'],
+    },
+    breed: {
+      type: String,
+      required: [true, 'Breed is required'],
+    },
+    sex: {
+      type: String,
+      enum: ['female', 'male'],
+      required: [true, 'Sex is required'],
+    },
+    location: {
+      type: String,
+      required: [true, 'City is required'],
+    },
+    price: {
+      type: Number,
+      required: [true, 'Price is required'],
+      default: 0,
+    },
+    comment: {
+      type: String,
+      required: [true, 'Comment is required'],
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
   },
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-  },
-  category: {
-    type: String,
-    enum: ['sell', 'lost/found', 'in good hands'],
-    required: [true, 'Category is required'],
-  },
-  birth: {
-    type: String,
-    required: [true, 'Date of birth is required'],
-  },
-  breed: {
-    type: String,
-    required: [true, 'Breed is required'],
-  },
-  location: {
-    type: String,
-    required: [true, 'City is required'],
-  },
-  favorite: {
-    type: Boolean,
-    default: false,
-  },
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'user',
-    required: true,
-  },
+  { versionKey: false, timestamps: true }
+);
+
+// =========================================================== Joi схема ==========================================================
+
+// ================ Стандартні налаштування схеми (без обов'язкової ціни)
+const joiStandartSchemaConfig = {
+  category: Joi.string().required().messages({
+    'any.required': `"Category" is required`,
+  }),
+
+  title: Joi.string().required().messages({
+    'any.required': `"Title" is required`,
+    'string.empty': `"Title" cannot be empty`,
+    'string.base': `"Title" must be string`,
+  }),
+
+  name: Joi.string().required().messages({
+    'any.required': `"Name" is required`,
+    'string.empty': `"Name" cannot be empty`,
+    'string.base': `"Name" must be string`,
+  }),
+
+  birthday: Joi.date().format('DD-MM-YYYY').iso().messages({
+    'string.empty': `"Birthday" cannot be empty`,
+    'string.base': `"Birthday" must be date`,
+  }),
+
+  breed: Joi.string().required().messages({
+    'any.required': `"Breed" is required`,
+    'string.empty': `"Breed" cannot be empty`,
+    'string.base': `"Breed" must be string`,
+  }),
+
+  sex: Joi.string().required().messages({
+    'any.required': `"Sex" is required`,
+    'string.empty': `"Sex" cannot be empty`,
+    'string.base': `"Sex" must be string`,
+  }),
+
+  location: Joi.string().required().messages({
+    'any.required': `"Location" is required`,
+    'string.empty': `"Location" cannot be empty`,
+    'string.base': `"Location" must be string`,
+  }),
+
+  comment: Joi.string().required().messages({
+    'any.required': `"Comment" is required`,
+    'string.empty': `"Comment" cannot be empty`,
+    'string.base': `"Comment" must be string`,
+  }),
+};
+
+// ================= Схема для sell категорії
+const sellSchema = Joi.object({
+  ...joiStandartSchemaConfig,
+  price: Joi.number().required().messages({
+    'any.required': `"Price" is required`,
+    'string.empty': `"Location" cannot be empty`,
+    'string.base': `"Price" must be number`,
+  }),
 });
+
+// ================= Схема для lostFound/InGoodHands категорії
+const lostFound_inGoodHandsSchema = Joi.object({ joiStandartSchemaConfig });
 
 noticeSchema.post('save', handleMongooseError);
 
 const schemas = {
   noticeSchema,
+  sellSchema,
+  lostFound_inGoodHandsSchema,
 };
 
 const Notice = model('notice', noticeSchema);

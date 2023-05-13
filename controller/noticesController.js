@@ -26,6 +26,9 @@ const getNoticeByCategory = async (req, res) => {
 const addNotice = async (req, res) => {
   const { _id: owner } = req.user;
   const result = await Notice.create({ ...req.body, owner });
+  if (!result) {
+    throw HttpError(404, `Notice with id:${id} not found`);
+  }
   res.status(201).json(result);
 };
 
