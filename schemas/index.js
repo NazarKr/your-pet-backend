@@ -1,3 +1,5 @@
 const { User, userValidation } = require('../schemas/user');
 
-module.exports = { User, userValidation };
+const { Notice, schemas } = require('./notice');
+
+module.exports = { User, userValidation, Notice, schemas };

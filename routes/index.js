@@ -1,3 +1,5 @@
 const authRouter = require('./authApi');
 
-module.exports = { authRouter };
+const noticeRouter = require('./noticesApi');
+
+module.exports = { authRouter, noticeRouter };
