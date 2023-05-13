@@ -223,8 +223,8 @@
           },
           "password": {
             "type": "string",
-            "description": "User's password",
-            "example": "qwerty123"
+            "description": "User's password should have at least 1 uppercase letter, 1 lowercase letter and 1 digit!",
+            "example": "Qwerty123"
           }
         }
       },
