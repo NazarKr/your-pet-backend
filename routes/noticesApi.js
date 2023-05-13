@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
+const { authentication } = require('../middlewares');
+const { validateBody } = require('../helpers');
+
+const { schema } = require('../schemas');
 // const { authCtrl } = require('../controller');
 
 // const { userValidation } = require('../schemas');
@@ -22,20 +26,22 @@ router.get('/notices/:categoryName');
 router.get('/notices/:id');
 
 // ============ створити ендпоінт для додавання оголошення до обраних
-router.get('/notices');
+router.get('/notices', authentication);
 
 // ============ створити ендпоінт для отримання оголошень авторизованого користувача доданих ним же в обрані
-router.patch('/notices/:id/favorite');
+router.get('/notices/:id/favorite', authentication);
 
 // ============ створити ендпоінт для видалення оголошення авторизованого користувача доданих цим же до обраних
-router.delete('/notices/:id/favorite');
+router.delete('/notices/:id/favorite', authentication);
 
 // ============ створити ендпоінт для додавання оголошень відповідно до обраної категорії
-router.post('/notices');
+router.post('/notices/:categoryName', authentication);
 
 // ============ створити ендпоінт для отримання оголошень авторизованого кристувача створених цим же користувачем
+router.get('/notices/:Id', authentication);
 
 // ============ створити ендпоінт для видалення оголошення авторизованого користувача створеного цим же користувачем
+router.delete('/notices/:id', authentication);
 
 // ================== Рендер списку оголошень з продажу
 // router.get('/notices/sell', noticesCtrl.sell);

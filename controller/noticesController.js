@@ -10,7 +10,7 @@ const listAllNotice = async (req, res) => {
 
 const listFavoriteNotice = async (req, res) => {
   const { _id: owner } = req.user;
-  const result = await Notice.getAll({ owner }).populate('category');
+  const result = await Notice.getAll({ owner });
   res.json(result);
 };
 
