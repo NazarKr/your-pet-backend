@@ -3,6 +3,7 @@ const logger = require('morgan');
 const cors = require('cors');
 
 const { authRouter } = require('./routes');
+const { petsRouter } = require('./routes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.static('public'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/users', authRouter);
+app.use('/api/users', petsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });

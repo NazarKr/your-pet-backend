@@ -1,3 +1,7 @@
 const authRouter = require('./authApi');
+const petsRouter = require('./petApi');
 
-module.exports = { authRouter };
+module.exports = {
+  authRouter,
+  petsRouter,
+};
