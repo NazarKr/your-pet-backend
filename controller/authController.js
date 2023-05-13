@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const { User } = require('../schemas');
 const { httpError, ctrlWrapper, sendEmail } = require('../helpers');
-const { SECRET, BASE_URL } = process.env;
+const { SECRET } = process.env;
 
 /**
  * ============================ Регистрация пользователя
