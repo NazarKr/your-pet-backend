@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const { noticeCtrl } = require('../controller');
+
 const { authentication } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
@@ -14,34 +16,34 @@ const { schema } = require('../schemas');
 // const { userRegisterShema, emailShema, userLoginShema, userUpdateShema } =
 //   userValidation;
 // ============= всі оголошення
-router.get('/notices');
+router.get('/', noticeCtrl.listAllNotice);
 
 // ============ створити ендпоінт для пошуку оголошеннь по заголовку
-router.get('/notices/:q');
+// router.get('/notices/:q');
 
 // ============ створити ендпоінт для отримання оголошень по категоріям
-router.get('/notices/:categoryName');
+router.get('/category/:category', noticeCtrl.getNoticeByCategory);
 
 // ============ створити ендпоінт для отримання одного оголошення
-router.get('/notices/:id');
+router.get('/:id', noticeCtrl.getNoticeById);
 
 // ============ створити ендпоінт для додавання оголошення до обраних
-router.get('/notices', authentication);
+// router.get('/notices', authentication);
 
 // ============ створити ендпоінт для отримання оголошень авторизованого користувача доданих ним же в обрані
-router.get('/notices/:id/favorite', authentication);
+// router.get('/notices/:id/favorite', authentication);
 
 // ============ створити ендпоінт для видалення оголошення авторизованого користувача доданих цим же до обраних
-router.delete('/notices/:id/favorite', authentication);
+// router.delete('/notices/:id/favorite', authentication);
 
 // ============ створити ендпоінт для додавання оголошень відповідно до обраної категорії
-router.post('/notices/:categoryName', authentication);
+router.post('/add', noticeCtrl.addNotice);
 
 // ============ створити ендпоінт для отримання оголошень авторизованого кристувача створених цим же користувачем
-router.get('/notices/:Id', authentication);
+// router.get('/notices/:Id', authentication);
 
 // ============ створити ендпоінт для видалення оголошення авторизованого користувача створеного цим же користувачем
-router.delete('/notices/:id', authentication);
+// router.delete('/notices/:id', authentication);
 
 // ================== Рендер списку оголошень з продажу
 // router.get('/notices/sell', noticesCtrl.sell);

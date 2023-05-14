@@ -2,7 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 
-const { authRouter } = require('./routes');
+const { authRouter, noticeRouter } = require('./routes');
 
 const app = express();
 
@@ -18,6 +18,7 @@ app.use(express.static('public'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/users', authRouter);
+app.use('/api/notices', noticeRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });

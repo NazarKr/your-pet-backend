@@ -7,7 +7,7 @@ const noticeSchema = new Schema(
   {
     category: {
       type: String,
-      enum: ['sell', 'lost/found', 'in good hands'],
+      enum: ['sell', 'lostFound', 'inGoodHands'],
       required: [true, 'Category is required'],
     },
     title: {
@@ -48,11 +48,15 @@ const noticeSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: 'user',
-      required: true,
+    img: {
+      type: String,
+      required: [true, 'Image is required'],
     },
+    // owner: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'user',
+    //   required: true,
+    // },
   },
   { versionKey: false, timestamps: true }
 );
@@ -77,7 +81,9 @@ const joiStandartSchemaConfig = {
     'string.base': `"Name" must be string`,
   }),
 
-  birthday: Joi.date().format('DD-MM-YYYY').iso().messages({
+  // .format('YYYY-MM-DD').iso()
+
+  birthday: Joi.date().messages({
     'string.empty': `"Birthday" cannot be empty`,
     'string.base': `"Birthday" must be date`,
   }),
@@ -118,7 +124,7 @@ const sellSchema = Joi.object({
 });
 
 // ================= Схема для lostFound/InGoodHands категорії
-const lostFound_inGoodHandsSchema = Joi.object({ joiStandartSchemaConfig });
+const lostFound_inGoodHandsSchema = Joi.object(joiStandartSchemaConfig);
 
 noticeSchema.post('save', handleMongooseError);
 
