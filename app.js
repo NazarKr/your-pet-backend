@@ -2,7 +2,12 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 
-const { authRouter, newsRouter, partnersRouter } = require('./routes');
+const {
+  authRouter,
+  newsRouter,
+  partnersRouter,
+  noticeRouter,
+} = require('./routes');
 
 const app = express();
 
@@ -17,7 +22,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use('/users', authRouter);
+app.use('/api/notices', noticeRouter);
 app.use('/news', newsRouter);
 app.use('/partners', partnersRouter);
 
