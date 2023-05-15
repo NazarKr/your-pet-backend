@@ -24,7 +24,7 @@ app.use(express.static('public'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/users', authRouter);
-app.use('/api/notices', noticeRouter);
+app.use('/notices', noticeRouter);
 app.use('/news', newsRouter);
 app.use('/partners', partnersRouter);
 
