@@ -1,22 +1,13 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar');
-const fs = require('fs/promises');
-const { nanoid } = require('nanoid');
-const path = require('path');
+// const { nanoid } = require('nanoid');
 
 require('dotenv').config();
 
 const { User } = require('../schemas');
-const {
-  httpError,
-  ctrlWrapper,
-  resizeImage,
-  sendEmail,
-} = require('../helpers');
-const HttpError = require('../helpers/httpError');
-const { SECRET, BASE_URL } = process.env;
-const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
+const { httpError, ctrlWrapper, sendEmail } = require('../helpers');
+const { SECRET } = process.env;
 
 /**
  * ============================ Регистрация пользователя
@@ -33,22 +24,22 @@ const registerUser = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
 
-  const verifycationToken = nanoid();
+  // const verifycationToken = nanoid();
 
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
     avatarUrl,
-    verifycationToken,
+    // verifycationToken,
   });
 
-  const verifycationEmail = {
-    to: email,
-    subject: 'Verifycation email',
-    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verifycationToken}" >Click here to verify your email</a>`,
-  };
+  // const verifycationEmail = {
+  //   to: email,
+  //   subject: 'Verifycation email',
+  //   html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verifycationToken}" >Click here to verify your email</a>`,
+  // };
 
-  await sendEmail(verifycationEmail);
+  // await sendEmail(verifycationEmail);
 
   res.status(201).json({
     email: newUser.email,
@@ -112,7 +103,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate('pets notices');
 
   if (!user) {
     throw httpError(401, `Email or password is wrong`);
@@ -138,6 +129,7 @@ const loginUser = async (req, res) => {
     avatarUrl: user.avatarUrl,
     pets: user.pets,
     notices: user.notices,
+    favorite: user.favorite,
     verify: user.verify,
   };
 
@@ -165,6 +157,7 @@ const getCurrentUser = async (req, res) => {
     avatarUrl,
     pets,
     notices,
+    favorite,
     verify,
   } = req.user;
 
@@ -178,6 +171,7 @@ const getCurrentUser = async (req, res) => {
     avatarUrl,
     pets,
     notices,
+    favorite,
     verify,
   });
 };
@@ -217,24 +211,27 @@ const logout = async (req, res) => {
  * ============================ Обновление аватарки пользователя
  */
 const updateAvatar = async (req, res) => {
-  // const { _id } = req.user;
+  const { _id } = req.user;
 
-  // const { path: tempUpload, filename } = req.file;
+  try {
+    const result = await User.findByIdAndUpdate(
+      _id,
+      { avatarUrl: req.file.path },
+      {
+        new: true,
+        fields: {
+          avatarUrl: 1,
+        },
+      }
+    );
 
-  // const avatarName = `${_id}_${filename}`;
-  // const resultUpload = path.join(avatarsDir, avatarName);
-
-  // await resizeImage(tempUpload, 250, 250);
-
-  // await fs.rename(tempUpload, resultUpload);
-  // const avatarUrl = path.join('avatars', avatarName);
-
-  // await User.findByIdAndUpdate(_id, { avatarUrl });
-
-  res.status(200).json({
-    // avatarUrl,
-    message: `Avatar successfully changed`,
-  });
+    res.status(200).json({
+      avatarUrl: result.avatarUrl,
+      message: `Avatar successfully updated`,
+    });
+  } catch (error) {
+    throw httpError(400);
+  }
 };
 
 module.exports = {

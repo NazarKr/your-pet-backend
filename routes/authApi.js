@@ -4,7 +4,7 @@ const router = express.Router();
 const { authCtrl } = require('../controller');
 
 const { userValidation } = require('../schemas');
-const { authentication, upload } = require('../middlewares');
+const { authentication, imageUpload } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
 const { userRegisterShema, emailShema, userLoginShema, userUpdateShema } =
@@ -32,7 +32,7 @@ router.post('/logout', authentication, authCtrl.logout);
 router.patch(
   '/avatars',
   authentication,
-  // upload.single('avatar'),
+  imageUpload.single('avatar'),
   authCtrl.updateAvatar
 );
 

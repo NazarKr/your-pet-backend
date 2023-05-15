@@ -16,7 +16,7 @@ const authentication = async (req, res, next) => {
   try {
     const response = jwt.verify(token, SECRET);
 
-    const user = await User.findById(response._id);
+    const user = await User.findById(response._id).populate('pets notices');
 
     if (!user || !user.token) {
       next(httpError(401));

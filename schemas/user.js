@@ -1,12 +1,15 @@
 const { Schema, model } = require('mongoose');
 const { handleMongooseError } = require('../helpers');
-const emailRegexp = require('./emailRegexp');
+
+const {
+  emailRegexp,
+  phoneRegex,
+  passwordRegex,
+} = require('./validationRegexps');
 
 const Joi = require('joi')
   .extend(require('@joi/date'))
   .extend(require('joi-phone-number'));
-
-const phoneRegex = new RegExp(/^[+]{1}(?:[0-9\-\(\)\/\.]\s?){6, 15}[0-9]{1}$/);
 
 const user = new Schema(
   {
@@ -19,8 +22,8 @@ const user = new Schema(
     password: {
       type: String,
       required: [true, 'Password is required'],
-      min: [8, 'Password should have a minimum length of 8'],
-      max: [20, 'Password should have a maximum length of 20'],
+      min: [6, 'Password should have a minimum length of 6'],
+      max: [16, 'Password should have a maximum length of 16'],
     },
     email: {
       required: [true, 'Email is required'],
@@ -59,6 +62,10 @@ const user = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: 'notices' }],
       default: [],
     },
+    favorite: {
+      type: [{ type: Schema.Types.ObjectId, ref: 'notices' }],
+      default: [],
+    },
     verify: {
       type: Boolean,
       default: false,
@@ -75,19 +82,18 @@ const user = new Schema(
  * Схема валидации регистрации пользователя.
  */
 const userRegisterShema = Joi.object({
-  password: Joi.string().min(8).max(20).messages({
+  password: Joi.string().min(6).max(16).regex(passwordRegex).messages({
     'any.required': `"Password" is required`,
     'string.empty': `"Password" cannot be empty`,
     'string.base': `"Password" must be string`,
     'string.min': `"Password" should have a minimum length of {#limit}`,
     'string.max': `"Password" should have a maximum length of {#limit}`,
+    'string.pattern.base': `"Password" should have at least 1 uppercase letter, 1 lowercase letter and 1 digit!`,
   }),
 
-  email: Joi.string().pattern(emailRegexp).required().messages({
-    'any.required': `"Email" is required`,
-    'string.empty': `"Email" cannot be empty`,
-    'string.base': `"Email" must be string`,
-    'string.pattern.base': `"Email" doesn't look like an email`,
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ['com', 'net'] },
   }),
 });
 
@@ -95,11 +101,9 @@ const userRegisterShema = Joi.object({
  * Схема валидации email.
  */
 const emailShema = Joi.object({
-  email: Joi.string().pattern(emailRegexp).required().messages({
-    'any.required': `Missing required field email`,
-    'string.empty': `"Email" cannot be empty`,
-    'string.base': `"Email" must be string`,
-    'string.pattern.base': `"Email" doesn't look like an email`,
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ['com', 'net'] },
   }),
 });
 
@@ -107,19 +111,18 @@ const emailShema = Joi.object({
  * Схема валидации логина пользователя.
  */
 const userLoginShema = Joi.object({
-  password: Joi.string().min(8).max(20).messages({
+  password: Joi.string().min(6).max(16).regex(passwordRegex).messages({
     'any.required': `"Password" is required`,
     'string.empty': `"Password" cannot be empty`,
     'string.base': `"Password" must be string`,
     'string.min': `"Password" should have a minimum length of {#limit}`,
     'string.max': `"Password" should have a maximum length of {#limit}`,
+    'string.pattern.base': `"Password" should have at least 1 uppercase letter, 1 lowercase letter and 1 digit!`,
   }),
 
-  email: Joi.string().pattern(emailRegexp).required().messages({
-    'any.required': `"Email" is required`,
-    'string.empty': `"Email" cannot be empty`,
-    'string.base': `"Email" must be string`,
-    'string.pattern.base': `"Email" doesn't look like an email`,
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ['com', 'net'] },
   }),
 });
 
@@ -135,16 +138,18 @@ const userUpdateShema = Joi.object({
     'string.max': `"Name" should have a maximum length of {#limit}`,
   }),
 
-  password: Joi.string().min(8).max(20).messages({
+  password: Joi.string().min(6).max(16).regex(passwordRegex).messages({
+    'any.required': `"Password" is required`,
     'string.empty': `"Password" cannot be empty`,
     'string.base': `"Password" must be string`,
     'string.min': `"Password" should have a minimum length of {#limit}`,
     'string.max': `"Password" should have a maximum length of {#limit}`,
+    'string.pattern.base': `"Password" should have at least 1 uppercase letter, 1 lowercase letter and 1 digit!`,
   }),
 
-  email: Joi.string().pattern(emailRegexp).messages({
-    'string.base': `"Email" must be string`,
-    'string.pattern.base': `"Email" doesn't look like an email`,
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ['com', 'net'] },
   }),
 
   birthday: Joi.date().format('DD-MM-YYYY').iso().messages({
