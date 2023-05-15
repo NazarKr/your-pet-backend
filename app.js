@@ -17,9 +17,9 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.use('/api/users', authRouter);
-app.use('/api/news', newsRouter);
-app.use('/api/partners', partnersRouter);
+app.use('/users', authRouter);
+app.use('/news', newsRouter);
+app.use('/partners', partnersRouter);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Not found' });

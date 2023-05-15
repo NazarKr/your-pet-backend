@@ -25,7 +25,7 @@ const findNews = async (req, res) => {
   const { query = null } = req.query;
 
   if (!query) {
-    throw httpError(400, 'request required');
+    throw httpError(400, 'Query parameter required');
   }
 
   const news = await Article.find(
