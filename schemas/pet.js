@@ -25,10 +25,11 @@ const petSchema = new Schema(
       max: [16, 'Breed should have a maximum length of 16'],
       default: '',
     },
-    file: {
-      required: [true, 'Photo is required'],
-      //   file	обовʼязковий, обʼємом до 3Мб
-    },
+    // file: {
+    //   required: [true, 'Photo is required'],
+    //   type: String,
+    //   //   file	обовʼязковий, обʼємом до 3Мб
+    // },
     comments: {
       type: String,
       min: [8, 'Comments should have a minimum length of 8'],
@@ -57,7 +58,7 @@ const petSchemas = {
   addPetSchema,
 };
 
-const Pet = model('contact', contactSchema);
+const Pet = model('pet', petSchema);
 
 module.exports = {
   petSchemas,
