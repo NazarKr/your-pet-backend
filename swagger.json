@@ -19,6 +19,14 @@
     {
       "name": "Users",
       "description": "User authorization and update endpoints"
+    },
+    {
+      "name": "News",
+      "description": "News endpoints"
+    },
+    {
+      "name": "Partners",
+      "description": "Partners endpoints"
     }
   ],
   "paths": {
@@ -201,6 +209,31 @@
           "200": {
             "description": "Successfully logout",
             "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/news": {
+      "post": {
+        "tags": ["News"],
+        "summary": "Get all news",
+        "parameters": [],
+        "security": [],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "Successfully loaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentResponse"
+                }
+              }
+            }
           },
           "401": {
             "description": "Unauthorized",
