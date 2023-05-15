@@ -3,18 +3,11 @@ const router = express.Router();
 
 const { noticeCtrl } = require('../controller');
 
-const { authentication } = require('../middlewares');
+const { authentication, isValidId } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
-const { schema } = require('../schemas');
-// const { authCtrl } = require('../controller');
+const { schemas } = require('../schemas');
 
-// const { userValidation } = require('../schemas');
-// const { authentication, upload } = require('../middlewares');
-// const { validateBody } = require('../helpers');
-
-// const { userRegisterShema, emailShema, userLoginShema, userUpdateShema } =
-//   userValidation;
 // ============= всі оголошення
 router.get('/', noticeCtrl.listAllNotice);
 
@@ -25,57 +18,49 @@ router.get('/', noticeCtrl.listAllNotice);
 router.get('/category/:category', noticeCtrl.getNoticeByCategory);
 
 // ============ створити ендпоінт для отримання одного оголошення
-router.get('/:id', noticeCtrl.getNoticeById);
+router.get('/:id', isValidId, noticeCtrl.getNoticeById);
 
 // ============ створити ендпоінт для додавання оголошення до обраних
-// router.get('/notices', authentication);
+router.patch(
+  '/favorite/:id',
+  authentication,
+  isValidId,
+  validateBody(schemas.updateFavoriteSchema),
+  noticeCtrl.updateFavorite
+);
 
 // ============ створити ендпоінт для отримання оголошень авторизованого користувача доданих ним же в обрані
-// router.get('/notices/:id/favorite', authentication);
-
-// ============ створити ендпоінт для видалення оголошення авторизованого користувача доданих цим же до обраних
-// router.delete('/notices/:id/favorite', authentication);
-
-// ============ створити ендпоінт для додавання оголошень відповідно до обраної категорії
-router.post('/add', noticeCtrl.addNotice);
-
-// ============ створити ендпоінт для отримання оголошень авторизованого кристувача створених цим же користувачем
-// router.get('/notices/:Id', authentication);
-
-// ============ створити ендпоінт для видалення оголошення авторизованого користувача створеного цим же користувачем
-// router.delete('/notices/:id', authentication);
-
-// ================== Рендер списку оголошень з продажу
-// router.get('/notices/sell', noticesCtrl.sell);
-
-// router.post('/notices/lost-found');
-
-// router.post('/notices/for-free');
-
-// router.post('/register', validateBody(userRegisterShema), authCtrl.register);
-
-// router.get('/verify/:verifycationToken', authCtrl.verify);
-
-// router.post('/verify', validateBody(emailShema), authCtrl.reVerify);
-
-// router.post('/login', validateBody(userLoginShema), authCtrl.login);
-
-// router.get('/current', authentication, authCtrl.current);
-
-// router.patch(
-//   '/update',
+// router.get(
+//   '/notices/favorite/:owner',
 //   authentication,
-//   validateBody(userUpdateShema),
-//   authCtrl.update
+//   isValidId,
+//   noticeCtrl.litsOwnerFavorite
 // );
 
-// router.post('/logout', authentication, authCtrl.logout);
-
-// router.patch(
-//   '/avatars',
+// ============ створити ендпоінт для видалення оголошення авторизованого користувача доданих цим же до обраних
+// router.delete(
+//   '/notices/favorite/:owner/:id',
 //   authentication,
-//   // upload.single('avatar'),
-//   authCtrl.updateAvatar
+//   isValidId,
+//   noticeCtrl.deleteNotice
+// );
+
+// ============ створити ендпоінт для додавання оголошень відповідно до обраної категорії
+router.post(
+  '/add',
+  authentication,
+  validateBody(schemas.sellSchema),
+  noticeCtrl.addNotice
+);
+
+// ============ створити ендпоінт для отримання оголошень авторизованого кристувача створених цим же користувачем
+// router.get('/notices/added', authentication, noticeCtrl.litsOwnerAdded);
+
+// ============ створити ендпоінт для видалення оголошення авторизованого користувача створеного цим же користувачем
+// router.delete(
+//   '/notices/added/:owner/:id',
+//   isValidId,
+//   noticeCtrl.deleteOwnerAdded
 // );
 
 module.exports = router;

@@ -52,11 +52,11 @@ const noticeSchema = new Schema(
       type: String,
       required: [true, 'Image is required'],
     },
-    // owner: {
-    //   type: Schema.Types.ObjectId,
-    //   ref: 'user',
-    //   required: true,
-    // },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }
 );
@@ -111,6 +111,18 @@ const joiStandartSchemaConfig = {
     'string.empty': `"Comment" cannot be empty`,
     'string.base': `"Comment" must be string`,
   }),
+
+  favorite: Joi.boolean().required().messages({
+    'any.required': `"Favorite" is required`,
+    'string.empty': `"Favorite" cannot be empty`,
+    'string.base': `"Favorite" must be string`,
+  }),
+
+  img: Joi.string().required().messages({
+    'any.required': `"Image" is required`,
+    'string.empty': `"Image" cannot be empty`,
+    'string.base': `"Image" must be string`,
+  }),
 };
 
 // ================= Схема для sell категорії
@@ -126,12 +138,21 @@ const sellSchema = Joi.object({
 // ================= Схема для lostFound/InGoodHands категорії
 const lostFound_inGoodHandsSchema = Joi.object(joiStandartSchemaConfig);
 
+// ================= Схема для додавання до обраних(Favorite)
+
+const updateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean()
+    .required()
+    .messages({ 'string.empty': 'missing field favorite' }),
+});
+
 noticeSchema.post('save', handleMongooseError);
 
 const schemas = {
   noticeSchema,
   sellSchema,
   lostFound_inGoodHandsSchema,
+  updateFavoriteSchema,
 };
 
 const Notice = model('notice', noticeSchema);
