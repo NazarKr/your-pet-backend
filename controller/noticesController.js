@@ -41,18 +41,18 @@ const addNotice = async (req, res) => {
   res.status(201).json(result);
 };
 
-const deleteNotice = async (req, res) => {
-  const { id } = req.params;
-  const result = await Notice.findByIdAndDelete(id);
-  if (!result) {
-    throw httpError(404, `Notice with id:${id} not found`);
-  }
-  res.json({
-    message: `Notice with id:${id} deleted`,
-  });
-};
+// const deleteNotice = async (req, res) => {
+//   const { id } = req.params;
+//   const result = await Notice.findByIdAndDelete(id);
+//   if (!result) {
+//     throw httpError(404, `Notice with id:${id} not found`);
+//   }
+//   res.json({
+//     message: `Notice with id:${id} deleted`,
+//   });
+// };
 
-const updateFavorite = async (req, res) => {
+const updateFavoriteAdd = async (req, res) => {
   const { id } = req.params;
   const result = await Notice.findByIdAndUpdate(id, req.body, { new: true });
   if (!result) {
@@ -61,30 +61,39 @@ const updateFavorite = async (req, res) => {
   res.json(result);
 };
 
-const deleteOwnerAdded = async (req, res) => {
-  const { id } = req.params;
-  const result = await Notice.findByIdAndUpdate(id, req.body, { new: false });
-  if (!result) {
-    throw httpError(404, `Notice with id:${id} not found`);
-  }
-  res.json(result);
-};
+// const updateFavoriteDelete = async (req, res) => {
+//   const { id } = req.params;
+//   const result = await Notice.findByIdAndUpdate(id, req.body, { new: false });
+//   if (!result) {
+//     throw httpError(404, `Notice with id:${id} not found`);
+//   }
+//   res.json(result);
+// };
 
-const litsOwnerAdded = async (req, res) => {
-  console.log('Owner added');
-  const { _id: owner } = req.user;
-  const result = await Notice.find({ owner }).populate('owner');
-  res.json(result);
-};
+// const deleteOwnerAdded = async (req, res) => {
+//   const { id } = req.params;
+//   const result = await Notice.findByIdAndUpdate(id, req.body, { new: false });
+//   if (!result) {
+//     throw httpError(404, `Notice with id:${id} not found`);
+//   }
+//   res.json(result);
+// };
 
-const litsOwnerFavorite = async (req, res) => {
-  const { _id: owner } = req.user;
-  const result = await Notice.find({ owner });
-  if (!result) {
-    throw httpError(404, `Favorite notices list is empty`);
-  }
-  res.json(result);
-};
+// const litsOwnerAdded = async (req, res) => {
+//   console.log('Owner added');
+//   const { _id: owner } = req.user;
+//   const result = await Notice.find({ owner }).populate('owner');
+//   res.json(result);
+// };
+
+// const litsOwnerFavorite = async (req, res) => {
+//   const { _id: owner } = req.user;
+//   const result = await Notice.find({ owner });
+//   if (!result) {
+//     throw httpError(404, `Favorite notices list is empty`);
+//   }
+//   res.json(result);
+// };
 
 module.exports = {
   listAllNotice: ctrlWrapper(listAllNotice),
@@ -92,7 +101,7 @@ module.exports = {
   addNotice: ctrlWrapper(addNotice),
   // deleteNotice: ctrlWrapper(deleteNotice),
   // litsOwnerFavorite: ctrlWrapper(litsOwnerFavorite),
-  updateFavorite: ctrlWrapper(updateFavorite),
+  updateFavoriteAdd: ctrlWrapper(updateFavoriteAdd),
   getNoticeById: ctrlWrapper(getNoticeById),
   // litsOwnerAdded: ctrlWrapper(litsOwnerAdded),
   // deleteOwnerAdded: ctrlWrapper(deleteOwnerAdded),

@@ -26,7 +26,7 @@ router.patch(
   authentication,
   isValidId,
   validateBody(schemas.updateFavoriteSchema),
-  noticeCtrl.updateFavorite
+  noticeCtrl.updateFavoriteAdd
 );
 
 // ============ створити ендпоінт для отримання оголошень авторизованого користувача доданих ним же в обрані
