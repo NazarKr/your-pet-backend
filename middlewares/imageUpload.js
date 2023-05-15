@@ -20,8 +20,8 @@ const storage = new CloudinaryStorage({
   params: {
     folder: (req, file) => file.fieldname,
     public_id: (req, file) => `${req.user._id}_${file.originalname}`,
-    width: 250,
-    height: 250,
+    width: 350,
+    height: 350,
     crop: 'fill',
   },
 });
