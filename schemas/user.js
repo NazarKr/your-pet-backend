@@ -1,15 +1,15 @@
 const { Schema, model } = require('mongoose');
 const { handleMongooseError } = require('../helpers');
-const emailRegexp = require('./emailRegexp');
+
+const {
+  emailRegexp,
+  phoneRegex,
+  passwordRegex,
+} = require('./validationRegexps');
 
 const Joi = require('joi')
   .extend(require('@joi/date'))
   .extend(require('joi-phone-number'));
-
-const phoneRegex =
-  /^(\+?\d{1,3}\s?-?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{2}[\s.-]?\d{2}$/;
-
-const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,16}$/;
 
 const user = new Schema(
   {
