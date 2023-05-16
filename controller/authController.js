@@ -103,7 +103,7 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate('favorite');
 
   if (!user) {
     throw httpError(401, `Email or password is wrong`);
