@@ -39,10 +39,14 @@ const getNoticeById = async (req, res) => {
 const addNotice = async (req, res) => {
   const { _id: owner } = req.user;
 
-  const result = await Notice.create({ ...req.body, owner });
+  const result = await Notice.create({
+    ...req.body,
+    owner,
+    noticeImageURL: req.file.path,
+  });
 
   if (!result) {
-    throw httpError(404, `Blablabla not found`);
+    throw httpError(404, `Image not found`);
   }
 
   res.status(201).json(result);

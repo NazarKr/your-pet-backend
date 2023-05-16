@@ -44,9 +44,10 @@ const noticeSchema = new Schema(
       type: String,
       required: [true, 'Comment is required'],
     },
-    img: {
+    noticeImageURL: {
       type: String,
-      required: [true, 'Image is required'],
+      // required: [true, 'Image is required'],
+      required: false,
     },
     owner: {
       type: Schema.Types.ObjectId,
@@ -108,7 +109,7 @@ const joiStandartSchemaConfig = {
     'string.base': `"Comment" must be string`,
   }),
 
-  img: Joi.string().required().messages({
+  noticeImageURL: Joi.string().messages({
     'any.required': `"Image" is required`,
     'string.empty': `"Image" cannot be empty`,
     'string.base': `"Image" must be string`,
