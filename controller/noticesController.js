@@ -59,9 +59,18 @@ const addNotice = async (req, res) => {
 //   });
 // };
 
-const updateFavoriteAdd = async (req, res) => {
+const updateFavorite = async (req, res) => {
   const { id } = req.params;
-  const result = await Notice.findByIdAndUpdate(id, req.body, { new: true });
+  const { favorite } = req.body;
+  const updFavorite = () => {
+    if (!favorite) {
+      return { favorite: false };
+    }
+    return { favorite: true };
+  };
+  const result = await Notice.findByIdAndUpdate(id, updFavorite(), {
+    new: true,
+  });
   if (!result) {
     throw httpError(404, `Notice with id:${id} not found`);
   }
@@ -108,7 +117,7 @@ module.exports = {
   addNotice: ctrlWrapper(addNotice),
   // deleteNotice: ctrlWrapper(deleteNotice),
   // litsOwnerFavorite: ctrlWrapper(litsOwnerFavorite),
-  updateFavoriteAdd: ctrlWrapper(updateFavoriteAdd),
+  updateFavorite: ctrlWrapper(updateFavorite),
   getNoticeById: ctrlWrapper(getNoticeById),
   // litsOwnerAdded: ctrlWrapper(litsOwnerAdded),
   // deleteOwnerAdded: ctrlWrapper(deleteOwnerAdded),
