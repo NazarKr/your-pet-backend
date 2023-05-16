@@ -93,7 +93,7 @@ const userRegisterShema = Joi.object({
 
   email: Joi.string().email({
     minDomainSegments: 2,
-    tlds: { allow: ['com', 'net'] },
+    tlds: { allow: ['com', 'net', 'ua'] },
   }),
 });
 
@@ -103,7 +103,7 @@ const userRegisterShema = Joi.object({
 const emailShema = Joi.object({
   email: Joi.string().email({
     minDomainSegments: 2,
-    tlds: { allow: ['com', 'net'] },
+    tlds: { allow: ['com', 'net', 'ua'] },
   }),
 });
 
@@ -122,7 +122,7 @@ const userLoginShema = Joi.object({
 
   email: Joi.string().email({
     minDomainSegments: 2,
-    tlds: { allow: ['com', 'net'] },
+    tlds: { allow: ['com', 'net', 'ua'] },
   }),
 });
 
@@ -149,7 +149,7 @@ const userUpdateShema = Joi.object({
 
   email: Joi.string().email({
     minDomainSegments: 2,
-    tlds: { allow: ['com', 'net'] },
+    tlds: { allow: ['com', 'net', 'ua'] },
   }),
 
   birthday: Joi.date().format('DD-MM-YYYY').iso().messages({
