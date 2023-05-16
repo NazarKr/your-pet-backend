@@ -55,15 +55,15 @@ const user = new Schema(
       required: [true, 'Avatar url is required'],
     },
     pets: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'pets' }],
+      type: Array,
       default: [],
     },
     notices: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'notices' }],
+      type: Array,
       default: [],
     },
     favorite: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'notices' }],
+      type: Array,
       default: [],
     },
     verify: {

@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "0.4",
+    "version": "0.5",
     "title": "Your-pet Api docs",
     "description": "Api docs",
     "license": {
@@ -19,6 +19,10 @@
     {
       "name": "Users",
       "description": "User authorization and update endpoints"
+    },
+    {
+      "name": "Notices",
+      "description": "Notices endpoints"
     },
     {
       "name": "News",
@@ -217,6 +221,130 @@
         }
       }
     },
+    "/notices": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all notices",
+        "parameters": [],
+        "security": [],
+        "requestBody": [],
+        "responses": {
+          "200": {
+            "description": "Got all notices",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/getAllNoticesResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Notices not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/notices/category/{category}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all notices by category",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "requestBody": [],
+        "responses": {
+          "200": {
+            "description": "Got all notices by category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/getAllNoticesResponse"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "{category} not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/notices/{id}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get notice by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [],
+        "requestBody": [],
+        "responses": {
+          "200": {
+            "description": "Got notice by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/getNoticeById"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "{id} not found",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/notices/add": {
+      "post": {
+        "tags": ["Notices"],
+        "summary": "Add notice",
+        "parameters": [],
+        "security": [{ "Bearer": [] }],
+        "requestBody": [],
+        "responses": {
+          "201": {
+            "description": "Notice created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/NoticesObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/news": {
       "get": {
         "tags": ["News"],
@@ -249,7 +377,10 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/NewsObjectResponse"
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/NewsObjectResponse"
+                  }
                 }
               }
             }
@@ -282,7 +413,10 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/NewsObjectResponse"
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/NewsObjectResponse"
+                  }
                 }
               }
             }
@@ -325,7 +459,10 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/PartnersObjectResponse"
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PartnersObjectResponse"
+                  }
                 }
               }
             }
@@ -572,11 +709,153 @@
           "message": "Avatar successfully changed"
         }
       },
+      "NoticesObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Mongodb objectId"
+          },
+          "category": {
+            "type": "string enum",
+            "description": "one of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pets name"
+          },
+          "birthday": {
+            "type": "string (date in iso format)",
+            "description": "Pets birthday"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pets breed"
+          },
+          "sex": {
+            "type": "string enum",
+            "description": "female, male"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment"
+          },
+          "favorite": {
+            "type": "array",
+            "description": "array of IDs of those who added the notice to favorites",
+            "items": {
+              "type": "string"
+            }
+          },
+          "img": {
+            "type": "string",
+            "description": "Image url"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owners Id"
+          }
+        },
+        "example": {
+          "_id": "6462647aae7c50c2bae9345b",
+          "category": "inGoodHands",
+          "title": "Sell stets doggy",
+          "name": "Pitsburg",
+          "birthday": "10/10/1000",
+          "breed": "Bulldog",
+          "sex": "male",
+          "location": "stets",
+          "price": 2333330,
+          "comment": "stets stets, like stets play stets stets stets",
+          "favorite": ["6462647aae7c50c2bae9345b", "6462647aae7c50c2bae9345b"],
+          "img": "http://img/dogs/bulldog",
+          "owner": "6462610994b8883816790126"
+        }
+      },
+      "getAllNoticesResponse": {
+        "type": "array",
+        "description": "array of notices objects",
+        "items": {
+          "type": "object",
+          "description": "Notice object",
+          "$ref": "#/components/schemas/NoticesObject"
+        },
+        "example": [
+          {
+            "_id": "6462647aae7c50c2bae9345b",
+            "category": "inGoodHands",
+            "title": "Sell stets doggy",
+            "name": "Pitsburg",
+            "birthday": "10/10/1000",
+            "breed": "Bulldog",
+            "sex": "male",
+            "location": "stets",
+            "price": 2333330,
+            "comment": "stets stets, like stets play stets stets stets",
+            "favorite": [
+              "6462647aae7c50c2bae9345b",
+              "6462647aae7c50c2bae9345b"
+            ],
+            "img": "http://img/dogs/bulldog",
+            "owner": "6462610994b8883816790126"
+          },
+          {
+            "_id": "64626482ae7c50c2bae9345e",
+            "category": "sell",
+            "title": "Sell stets doggy",
+            "name": "Pitsburg",
+            "birthday": "10/10/1000",
+            "breed": "Bulldog",
+            "sex": "male",
+            "location": "stets",
+            "price": 2333330,
+            "comment": "stets stets, like stets play stets stets stets",
+            "favorite": [
+              "6462647aae7c50c2bae9345b",
+              "6462647aae7c50c2bae9345b"
+            ],
+            "img": "http://img/dogs/bulldog",
+            "owner": "6462610994b8883816790126"
+          }
+        ]
+      },
+      "getNoticeById": {
+        "type": "object",
+        "description": "Notice object",
+        "$ref": "#/components/schemas/NoticesObject",
+        "example": {
+          "_id": "64626491ae7c50c2bae93464",
+          "category": "inGoodHands",
+          "title": "Sell stets doggy",
+          "name": "Pitsburg",
+          "birthday": "10/10/1000",
+          "breed": "Bulldog",
+          "sex": "male",
+          "location": "stets",
+          "price": 2333330,
+          "comment": "stets stets, like stets play stets stets stets",
+          "favorite": ["6462647aae7c50c2bae9345b", "6462647aae7c50c2bae9345b"],
+          "img": "http://img/dogs/bulldog",
+          "owner": "6462610994b8883816790126"
+        }
+      },
       "NewsObjectResponse": {
         "type": "object",
         "properties": {
           "_id": {
-            "type": "objectId",
+            "type": "string",
             "description": "Mongodb objectId"
           },
           "imgUrl": {
@@ -622,15 +901,6 @@
             "date": "2023-04-07T09:00:46+0000",
             "url": "https://www.nytimes.com/2023/04/07/health/vet-pet-health-telemedicine.html",
             "id": "nyt://article/992f2f7f-793c-5553-b722-348625f53a4b"
-          },
-          {
-            "_id": "646142e97309f6c6b8c059be",
-            "imgUrl": "https://www.nytimes.com/images/2023/04/04/travel/00tripped-up-illo/00tripped-up-illo-blog480.jpg",
-            "title": "Help! My Dog Was Rejected by the Airline Because of a Carrier Rule That Doesn’t Exist.",
-            "text": "A gate agent suddenly objected to a canine who’d flown previously on the same route, saying the carrier wasn’t big enough. Our columnist tries to sort out what the actual rules for pets on planes are.",
-            "date": "2023-04-05T09:00:24+0000",
-            "url": "https://www.nytimes.com/2023/04/05/travel/airlines-flying-with-dogs-cats.html",
-            "id": "nyt://article/08d32cd1-6eb4-50f7-8126-f7bad37b098f"
           }
         ]
       },
@@ -638,7 +908,7 @@
         "type": "object",
         "properties": {
           "_id": {
-            "type": "objectId",
+            "type": "string",
             "description": "Mongodb objectId"
           },
           "title": {
