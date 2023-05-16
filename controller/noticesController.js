@@ -1,4 +1,4 @@
-const { Notice } = require('../schemas');
+const { Notice, User } = require('../schemas');
 
 const { httpError, ctrlWrapper } = require('../helpers');
 
@@ -59,13 +59,26 @@ const addNotice = async (req, res) => {
 //   });
 // };
 
-const updateFavoriteAdd = async (req, res) => {
+const updateFavorite = async (req, res) => {
+  const { _id, favorite } = req.user;
   const { id } = req.params;
-  const result = await Notice.findByIdAndUpdate(id, req.body, { new: true });
+
+  const updFavorite = () => {
+    if (favorite.includes(id)) {
+      return { $pull: { favorite: id } };
+    }
+    return { $push: { favorite: id } };
+  };
+
+  const result = await User.findByIdAndUpdate(_id, updFavorite(), {
+    new: true,
+  });
+
   if (!result) {
     throw httpError(404, `Notice with id:${id} not found`);
   }
-  res.json(result);
+
+  res.status(200).json(result);
 };
 
 // const updateFavoriteDelete = async (req, res) => {
@@ -108,7 +121,7 @@ module.exports = {
   addNotice: ctrlWrapper(addNotice),
   // deleteNotice: ctrlWrapper(deleteNotice),
   // litsOwnerFavorite: ctrlWrapper(litsOwnerFavorite),
-  updateFavoriteAdd: ctrlWrapper(updateFavoriteAdd),
+  updateFavorite: ctrlWrapper(updateFavorite),
   getNoticeById: ctrlWrapper(getNoticeById),
   // litsOwnerAdded: ctrlWrapper(litsOwnerAdded),
   // deleteOwnerAdded: ctrlWrapper(deleteOwnerAdded),
