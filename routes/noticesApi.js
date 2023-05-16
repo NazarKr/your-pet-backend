@@ -25,7 +25,6 @@ router.patch(
   '/favorite/:id',
   authentication,
   isValidId,
-  validateBody(schemas.updateFavoriteSchema),
   noticeCtrl.updateFavorite
 );
 
