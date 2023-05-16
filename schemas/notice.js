@@ -12,18 +12,24 @@ const noticeSchema = new Schema(
     },
     title: {
       type: String,
+      min: [3, 'Title should have a minimum length of 3'],
+      max: [20, 'Title should have a maximum length of 20'],
       required: [true, 'Title is required'],
     },
     name: {
       type: String,
+      min: [3, 'Name should have a minimum length of 3'],
+      max: [20, 'Name should have a maximum length of 20'],
       required: [true, 'Name is required'],
     },
     birthday: {
-      type: String,
+      type: Date,
       required: [true, 'Birthday is required'],
     },
     breed: {
       type: String,
+      min: [3, 'Breed should have a minimum length of 3'],
+      max: [20, 'Breed should have a maximum length of 20'],
       required: [true, 'Breed is required'],
     },
     sex: {
@@ -33,6 +39,8 @@ const noticeSchema = new Schema(
     },
     location: {
       type: String,
+      min: [3, 'City should have a minimum length of 3'],
+      max: [20, 'City should have a maximum length of 20'],
       required: [true, 'City is required'],
     },
     price: {
@@ -42,9 +50,11 @@ const noticeSchema = new Schema(
     },
     comment: {
       type: String,
+      min: [3, 'Comment should have a minimum length of 3'],
+      max: [120, 'Comment should have a maximum length of 120'],
       required: [true, 'Comment is required'],
     },
-    img: {
+    noticeImageURL: {
       type: String,
       required: [true, 'Image is required'],
     },
@@ -84,7 +94,7 @@ const joiStandartSchemaConfig = {
     'string.base': `"Birthday" must be date`,
   }),
 
-  breed: Joi.string().required().messages({
+  breed: Joi.string().min(3).max(20).required().messages({
     'any.required': `"Breed" is required`,
     'string.empty': `"Breed" cannot be empty`,
     'string.base': `"Breed" must be string`,
@@ -96,19 +106,19 @@ const joiStandartSchemaConfig = {
     'string.base': `"Sex" must be string`,
   }),
 
-  location: Joi.string().required().messages({
+  location: Joi.string().min(3).max(20).required().messages({
     'any.required': `"Location" is required`,
     'string.empty': `"Location" cannot be empty`,
     'string.base': `"Location" must be string`,
   }),
 
-  comment: Joi.string().required().messages({
+  comment: Joi.string().min(3).max(120).required().messages({
     'any.required': `"Comment" is required`,
     'string.empty': `"Comment" cannot be empty`,
     'string.base': `"Comment" must be string`,
   }),
 
-  img: Joi.string().required().messages({
+  noticeImageURL: Joi.string().messages({
     'any.required': `"Image" is required`,
     'string.empty': `"Image" cannot be empty`,
     'string.base': `"Image" must be string`,

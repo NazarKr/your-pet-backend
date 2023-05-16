@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { noticeCtrl } = require('../controller');
 
-const { authentication, isValidId } = require('../middlewares');
+const { authentication, isValidId, imageUpload } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
 const { schemas } = require('../schemas');
@@ -48,6 +48,7 @@ router.patch(
 router.post(
   '/add',
   authentication,
+  imageUpload.single('noticeImageURL'),
   validateBody(schemas.sellSchema),
   noticeCtrl.addNotice
 );
