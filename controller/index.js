@@ -1,7 +1,7 @@
 const authCtrl = require('./authController');
 const newsCtrl = require('./newsController');
 const partnersCtrl = require('./partnersController');
-
+const petsCtrl = require('./petsController');
 const noticeCtrl = require('./noticesController');
 
 module.exports = {
@@ -9,4 +9,5 @@ module.exports = {
   noticeCtrl,
   newsCtrl,
   partnersCtrl,
+  petsCtrl,
 };
