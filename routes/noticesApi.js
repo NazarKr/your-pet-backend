@@ -22,7 +22,7 @@ router.get('/:id', isValidId, noticeCtrl.getNoticeById);
 
 // ============ додавання оголошення до обраних
 router.patch(
-  '/favorite/:id',
+  '/my/favorite/:id',
   authentication,
   isValidId,
   noticeCtrl.addToFavorite
@@ -30,14 +30,14 @@ router.patch(
 
 // ============ видалення оголошення з обраних
 router.delete(
-  '/favorite/:id',
+  '/my/favorite/:id',
   authentication,
   isValidId,
   noticeCtrl.removeFromFavorite
 );
 
 // ============ отримання обраних
-router.get('/favorite/all', authentication, noticeCtrl.allFavorite);
+router.get('/my/favorite', authentication, noticeCtrl.allFavorite);
 
 // ============ додавання оголошень
 router.post(

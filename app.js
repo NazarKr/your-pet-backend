@@ -4,9 +4,10 @@ const cors = require('cors');
 
 const {
   authRouter,
+  noticeRouter,
   newsRouter,
   partnersRouter,
-  noticeRouter,
+  petsRouter,
 } = require('./routes');
 
 const app = express();

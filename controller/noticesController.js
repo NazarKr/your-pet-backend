@@ -52,15 +52,15 @@ const findNotices = async (req, res) => {
  */
 const getNoticeByCategory = async (req, res) => {
   const { category } = req.params;
-  const { page = 1, limit = 10, sex } = req.query;
+  const { page = 1, limit = 10, sex, minage, maxage } = req.query;
 
-  //3-12
-  //1
-  //2
+  // 3-12
+  // 1
+  // 2
 
   // const age = calculateAge(birth);
 
-  const result = await Notice.find({ category, sex }, '', {
+  const result = await Notice.find({ category }, '', {
     skip: skipPages(page, limit),
     limit,
   });
