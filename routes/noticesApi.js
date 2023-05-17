@@ -43,7 +43,7 @@ router.get('/my/favorite', authentication, noticeCtrl.allFavorite);
 router.post(
   '/',
   authentication,
-  // validateBody(schemas.sellSchema),
+  validateBody(schemas.sellSchema),
   imageUpload.single('noticeImage'),
   noticeCtrl.addNotice
 );
