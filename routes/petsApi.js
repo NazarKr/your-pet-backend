@@ -8,13 +8,13 @@ const { addPetSchema } = petSchemas;
 const { authentication, isValidId, imageUpload } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
-// router.get('/', authentication, petsCtrl.getUserAndPets);
+router.get('/', authentication, petsCtrl.getUserAndPets);
 
 router.post(
   '/',
   authentication,
-  // validateBody(addPetSchema),
-  // imageUpload.single('petsImage'),
+  imageUpload.single('petsImage'),
+  validateBody(addPetSchema),
   petsCtrl.addPet
 );
 
