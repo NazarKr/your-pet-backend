@@ -43,8 +43,8 @@ router.get('/my/favorite', authentication, noticeCtrl.allFavorite);
 router.post(
   '/',
   authentication,
-  validateBody(schemas.sellSchema),
   imageUpload.single('noticeImage'),
+  validateBody(schemas.sellSchema),
   noticeCtrl.addNotice
 );
 
@@ -52,6 +52,6 @@ router.post(
 router.delete('/:id', authentication, isValidId, noticeCtrl.deleteNotice);
 
 // ============ отримання оголошень створених користувачем
-router.get('/my/all', authentication, noticeCtrl.myNotices);
+router.get('/my/created', authentication, noticeCtrl.myNotices);
 
 module.exports = router;

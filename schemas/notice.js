@@ -54,7 +54,7 @@ const noticeSchema = new Schema(
       max: [120, 'Comment should have a maximum length of 120'],
       required: [true, 'Comment is required'],
     },
-    noticeImageURL: {
+    img: {
       type: String,
       required: [true, 'Image is required'],
     },
@@ -118,7 +118,7 @@ const joiStandartSchemaConfig = {
     'string.base': `"Comment" must be string`,
   }),
 
-  noticeImageURL: Joi.string().messages({
+  noticeImage: Joi.string().messages({
     'any.required': `"Image" is required`,
     'string.empty': `"Image" cannot be empty`,
     'string.base': `"Image" must be string`,

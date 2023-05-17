@@ -1,13 +1,11 @@
 const { Notice, User } = require('../schemas');
 
-
 const {
   httpError,
   ctrlWrapper,
   skipPages,
   calculateAge,
 } = require('../helpers');
-
 
 const listAllNotice = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
@@ -162,9 +160,10 @@ const addNotice = async (req, res) => {
 
   if (!req.body || req.body === {}) {
     throw httpError(400);
-
+  }
   if (!result) {
     throw httpError(404, `Image not found`);
+  }
 
   res.status(201).json(result);
 };
@@ -176,7 +175,6 @@ const deleteNotice = async (req, res) => {
   const { id } = req.params;
 
   const result = await Notice.findByIdAndDelete(id);
-
 
   if (!result) {
     throw httpError(404, `Notice with id:${id} not found`);
