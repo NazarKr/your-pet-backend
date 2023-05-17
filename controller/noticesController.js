@@ -7,6 +7,9 @@ const {
   calculateAge,
 } = require('../helpers');
 
+/**
+ * ============================ Все объявления
+ */
 const listAllNotice = async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
 
@@ -37,7 +40,7 @@ const findNotices = async (req, res) => {
     limit,
   });
 
-  if (!result) {
+  if (result.length === 0) {
     throw httpError(404, `Notices not found`);
   }
 
@@ -92,7 +95,7 @@ const addToFavorite = async (req, res) => {
   const { _id, favorite } = req.user;
 
   if (favorite.includes(id)) {
-    throw httpError(400, `Notice with id:${id} already in favorite`);
+    throw httpError(400, `Notice already in favorite`);
   }
 
   const result = await User.findByIdAndUpdate(_id, { $push: { favorite: id } });
@@ -112,7 +115,7 @@ const removeFromFavorite = async (req, res) => {
   const { _id, favorite } = req.user;
 
   if (!favorite.includes(id)) {
-    throw httpError(400, `Notice with id:${id} not in favorite`);
+    throw httpError(400, `Notice not in favorite`);
   }
 
   const result = await User.findByIdAndUpdate(_id, { $pull: { favorite: id } });
@@ -121,7 +124,7 @@ const removeFromFavorite = async (req, res) => {
     throw httpError(404, `Notice with id:${id} not found`);
   }
 
-  res.status(200).json({ message: `${id} Successfully removed from favorite` });
+  res.status(200).json({ message: `Successfully removed from favorite` });
 };
 
 /**
@@ -140,6 +143,10 @@ const allFavorite = async (req, res) => {
   }).populate('favorite');
 
   if (result.favorite.length === 0) {
+    throw httpError(404, `Favorite notices list is empty`);
+  }
+
+  if (!result) {
     throw httpError(404, `Favorite notices list is empty`);
   }
 
@@ -172,16 +179,17 @@ const addNotice = async (req, res) => {
  * ============================ Удаление объявления
  */
 const deleteNotice = async (req, res) => {
-  const { id } = req.params;
+  const { id: _id } = req.params;
+  const { _id: owner } = req.user;
 
-  const result = await Notice.findByIdAndDelete(id);
+  const result = await Notice.find({ _id, owner });
 
   if (!result) {
-    throw httpError(404, `Notice with id:${id} not found`);
+    throw httpError(404, `Notice not found`);
   }
 
   res.json({
-    message: `Notice with id:${id} deleted`,
+    message: `Notice successfully deleted`,
   });
 };
 
@@ -196,6 +204,14 @@ const myNotices = async (req, res) => {
     skip: skipPages(page, limit),
     limit,
   });
+
+  if (result.length === 0) {
+    throw httpError(404, `User did not create notices`);
+  }
+
+  if (!result) {
+    throw httpError(404, `Notice not found`);
+  }
 
   res.json(result);
 };
