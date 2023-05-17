@@ -283,6 +283,7 @@
             "name": "category",
             "in": "path",
             "required": "true",
+            "description": "enum: ['sell', 'lostFound', 'inGoodHands']",
             "schema": {
               "type": "string"
             }
