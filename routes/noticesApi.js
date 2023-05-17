@@ -11,56 +11,47 @@ const { schemas } = require('../schemas');
 // ============= всі оголошення
 router.get('/', noticeCtrl.listAllNotice);
 
-// ============ створити ендпоінт для пошуку оголошеннь по заголовку
-// router.get('/notices/:q');
+// ============ пошук оголошеннь по заголовку
+router.get('/find', noticeCtrl.findNotices);
 
-// ============ створити ендпоінт для отримання оголошень по категоріям
+// ============ отримання оголошень по категоріям
 router.get('/category/:category', noticeCtrl.getNoticeByCategory);
 
-// ============ створити ендпоінт для отримання одного оголошення
+// ============ отримання одного оголошення по id
 router.get('/:id', isValidId, noticeCtrl.getNoticeById);
 
-// ============ створити ендпоінт для додавання оголошення до обраних
+// ============ додавання оголошення до обраних
 router.patch(
-  '/favorite/:id',
+  '/my/favorite/:id',
   authentication,
   isValidId,
-  noticeCtrl.updateFavorite
+  noticeCtrl.addToFavorite
 );
 
-// ============ створити ендпоінт для отримання оголошень авторизованого користувача доданих ним же в обрані
-// router.get(
-//   '/notices/favorite/:owner',
-//   authentication,
-//   isValidId,
-//   noticeCtrl.litsOwnerFavorite
-// );
-
-// ============ створити ендпоінт для видалення оголошення авторизованого користувача доданих цим же до обраних
-// router.delete(
-//   '/notices/favorite/:owner/:id',
-//   authentication,
-//   isValidId,
-//   noticeCtrl.deleteNotice
-// );
-
-// ============ створити ендпоінт для додавання оголошень відповідно до обраної категорії
-router.post(
-  '/add',
+// ============ видалення оголошення з обраних
+router.delete(
+  '/my/favorite/:id',
   authentication,
-  imageUpload.single('noticeImageURL'),
+  isValidId,
+  noticeCtrl.removeFromFavorite
+);
+
+// ============ отримання обраних
+router.get('/my/favorite', authentication, noticeCtrl.allFavorite);
+
+// ============ додавання оголошень
+router.post(
+  '/',
+  authentication,
   validateBody(schemas.sellSchema),
+  imageUpload.single('noticeImage'),
   noticeCtrl.addNotice
 );
 
-// ============ створити ендпоінт для отримання оголошень авторизованого кристувача створених цим же користувачем
-// router.get('/notices/added', authentication, noticeCtrl.litsOwnerAdded);
+// ============ видалення оголошення
+router.delete('/:id', authentication, isValidId, noticeCtrl.deleteNotice);
 
-// ============ створити ендпоінт для видалення оголошення авторизованого користувача створеного цим же користувачем
-// router.delete(
-//   '/notices/added/:owner/:id',
-//   isValidId,
-//   noticeCtrl.deleteOwnerAdded
-// );
+// ============ отримання оголошень створених користувачем
+router.get('/my/all', authentication, noticeCtrl.myNotices);
 
 module.exports = router;
