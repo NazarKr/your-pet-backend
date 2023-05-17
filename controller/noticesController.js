@@ -1,12 +1,22 @@
 const { Notice, User } = require('../schemas');
 
-const { httpError, ctrlWrapper } = require('../helpers');
+const {
+  httpError,
+  ctrlWrapper,
+  skipPages,
+  calculateAge,
+} = require('../helpers');
 
 /**
  * ============================ Получение всех объявлений
  */
 const listAllNotice = async (req, res) => {
-  const result = await Notice.find({}, '-createdAt -updatedAt');
+  const { page = 1, limit = 10 } = req.query;
+
+  const result = await Notice.find({}, '-createdAt -updatedAt', {
+    skip: skipPages(page, limit),
+    limit,
+  });
 
   if (!result) {
     throw httpError(404, `Notices not found`);
@@ -19,13 +29,16 @@ const listAllNotice = async (req, res) => {
  * ============================ Поиск объявлений
  */
 const findNotices = async (req, res) => {
-  const { query = null } = req.query;
+  const { query = null, page = 1, limit = 10 } = req.query;
 
   if (!query) {
     throw httpError(400, 'Query parameter required');
   }
 
-  const result = await Notice.find({ $text: { $search: query } });
+  const result = await Notice.find({ $text: { $search: query } }, '', {
+    skip: skipPages(page, limit),
+    limit,
+  });
 
   if (!result) {
     throw httpError(404, `Notices not found`);
@@ -39,8 +52,18 @@ const findNotices = async (req, res) => {
  */
 const getNoticeByCategory = async (req, res) => {
   const { category } = req.params;
+  const { page = 1, limit = 10, sex } = req.query;
 
-  const result = await Notice.find({ category });
+  //3-12
+  //1
+  //2
+
+  // const age = calculateAge(birth);
+
+  const result = await Notice.find({ category, sex }, '', {
+    skip: skipPages(page, limit),
+    limit,
+  });
 
   if (!result) {
     throw httpError(404, `${category} not found`);
@@ -109,11 +132,14 @@ const removeFromFavorite = async (req, res) => {
  */
 const allFavorite = async (req, res) => {
   const { _id } = req.user;
+  const { page = 1, limit = 10 } = req.query;
 
-  const result = await User.findById(_id, {
+  const result = await User.findById(_id, '', {
     fields: {
       favorite: 1,
     },
+    skip: skipPages(page, limit),
+    limit,
   }).populate('favorite');
 
   if (result.favorite.length === 0) {
@@ -164,8 +190,12 @@ const deleteNotice = async (req, res) => {
  */
 const myNotices = async (req, res) => {
   const { _id: owner } = req.user;
+  const { page = 1, limit = 10 } = req.query;
 
-  const result = await Notice.find({ owner });
+  const result = await Notice.find({ owner }, '', {
+    skip: skipPages(page, limit),
+    limit,
+  });
 
   res.json(result);
 };
