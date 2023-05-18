@@ -103,7 +103,10 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email }).populate('favorite');
+  const user = await User.findOne({ email }).populate(
+    'favorite',
+    '-createdAt -updatedAt'
+  );
 
   if (!user) {
     throw httpError(401, `Email or password is wrong`);
@@ -147,33 +150,14 @@ const loginUser = async (req, res) => {
  * ============================ Текущий пользователь
  */
 const getCurrentUser = async (req, res) => {
-  const {
-    _id,
-    name,
-    email,
-    birthday,
-    phone,
-    city,
-    avatarUrl,
-    pets,
-    notices,
-    favorite,
-    verify,
-  } = req.user;
+  const { _id } = req.user;
 
-  res.status(200).json({
+  const user = await User.findById(
     _id,
-    name,
-    email,
-    birthday,
-    phone,
-    city,
-    avatarUrl,
-    pets,
-    notices,
-    favorite,
-    verify,
-  });
+    '-createdAt -updatedAt -password -token -verifycationToken'
+  ).populate('favorite', '-createdAt -updatedAt');
+
+  res.status(200).json(user);
 };
 
 /**
@@ -191,7 +175,7 @@ const userUpdate = async (req, res) => {
       createdAt: 0,
       updatedAt: 0,
     },
-  });
+  }).populate('favorite', '-createdAt -updatedAt');
 
   res.status(200).json(result);
 };

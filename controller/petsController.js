@@ -43,7 +43,7 @@ const getUserAndPets = async (req, res) => {
     verify,
   } = req.user;
 
-  const pets = await Pet.find({ owner: _id }, '-createdAt -updatedAt -owner');
+  const pets = await Pet.find({ owner: _id }, '-createdAt -updatedAt');
 
   const user = {
     _id,

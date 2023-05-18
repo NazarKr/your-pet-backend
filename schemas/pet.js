@@ -61,7 +61,7 @@ const addPetSchema = Joi.object({
   }),
 
   petsImage: Joi.string().required().messages({
-    'any.required': `"Image" is required`,
+    'any.required': `"Pets image" is required`,
     'string.empty': `"Image" cannot be empty`,
     'string.base': `"Image" must be string`,
   }),

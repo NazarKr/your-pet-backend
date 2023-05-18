@@ -35,10 +35,14 @@ const findNotices = async (req, res) => {
     throw httpError(400, 'Query parameter required');
   }
 
-  const result = await Notice.find({ $text: { $search: query } }, '', {
-    skip: skipPages(page, limit),
-    limit,
-  });
+  const result = await Notice.find(
+    { $text: { $search: query } },
+    '-createdAt -updatedAt',
+    {
+      skip: skipPages(page, limit),
+      limit,
+    }
+  );
 
   if (result.length === 0) {
     throw httpError(404, `Notices not found`);
@@ -60,7 +64,7 @@ const getNoticeByCategory = async (req, res) => {
 
   // const age = calculateAge(birth);
 
-  const result = await Notice.find({ category }, '', {
+  const result = await Notice.find({ category }, '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
   });
@@ -78,7 +82,10 @@ const getNoticeByCategory = async (req, res) => {
 const getNoticeById = async (req, res) => {
   const { id: _id } = req.params;
 
-  const result = await Notice.findById(_id);
+  const result = await Notice.findById(_id, '-createdAt -updatedAt').populate(
+    'owner',
+    ' -_id -password -token -verifycationToken -createdAt -updatedAt'
+  );
 
   if (!result) {
     throw httpError(404, `${_id} not found`);
@@ -140,7 +147,7 @@ const allFavorite = async (req, res) => {
     },
     skip: skipPages(page, limit),
     limit,
-  }).populate('favorite');
+  }).populate('favorite', '-createdAt -updatedAt');
 
   if (result.favorite.length === 0) {
     throw httpError(404, `Favorite notices list is empty`);
@@ -200,7 +207,7 @@ const myNotices = async (req, res) => {
   const { _id: owner } = req.user;
   const { page = 1, limit = 10 } = req.query;
 
-  const result = await Notice.find({ owner }, '', {
+  const result = await Notice.find({ owner }, '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
   });
