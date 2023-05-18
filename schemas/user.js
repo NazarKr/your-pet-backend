@@ -147,7 +147,7 @@ const userUpdateShema = Joi.object({
     tlds: { allow: ['com', 'net', 'ua'] },
   }),
 
-  birthday: Joi.date().format('DD-MM-YYYY').iso().messages({
+  birthday: Joi.date().iso().messages({
     'string.empty': `"Birthday" cannot be empty`,
     'string.base': `"Birthday" must be date`,
   }),

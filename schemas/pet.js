@@ -13,7 +13,7 @@ const petSchema = new Schema(
     },
     birthday: {
       // date	обовʼязкове, дата в форматі 22.10.2022
-      type: String,
+      type: Date,
       required: [true, 'Birthday is required'],
     },
     breed: {
@@ -49,7 +49,7 @@ const addPetSchema = Joi.object({
     'string.base': `"Name" must be string`,
   }),
 
-  birthday: Joi.date().messages({
+  birthday: Joi.date().iso().messages({
     'string.empty': `"Birthday" cannot be empty`,
     'string.base': `"Birthday" must be date`,
   }),

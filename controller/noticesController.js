@@ -29,14 +29,14 @@ const listAllNotice = async (req, res) => {
  * ============================ Поиск объявлений
  */
 const findNotices = async (req, res) => {
-  const { query = null, page = 1, limit = 10 } = req.query;
+  const { query = null, category = null, page = 1, limit = 10 } = req.query;
 
-  if (!query) {
-    throw httpError(400, 'Query parameter required');
+  if (!query || !category) {
+    throw httpError(400, 'Query and category parameters required');
   }
 
   const result = await Notice.find(
-    { $text: { $search: query } },
+    { category, $text: { $search: query } },
     '-createdAt -updatedAt',
     {
       skip: skipPages(page, limit),
@@ -56,24 +56,50 @@ const findNotices = async (req, res) => {
  */
 const getNoticeByCategory = async (req, res) => {
   const { category } = req.params;
-  const { page = 1, limit = 10, sex, minage, maxage } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    sex = null,
+    minage = null,
+    maxage = null,
+  } = req.query;
 
-  // 3-12
-  // 1
-  // 2
+  const sexFilter = () => {
+    if (!sex) {
+      return { category };
+    }
 
-  // const age = calculateAge(birth);
+    return { category, sex };
+  };
 
-  const result = await Notice.find({ category }, '-createdAt -updatedAt', {
+  const notices = await Notice.find(sexFilter(), '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
   });
 
-  if (!result) {
+  if (!notices) {
     throw httpError(404, `${category} not found`);
   }
 
-  res.json(result);
+  const result = notices.filter(item => {
+    const { birthday } = item;
+
+    const today = new Date().getFullYear();
+
+    const age = today - new Date(birthday).getFullYear();
+    const min = parseInt(minage);
+    const max = parseInt(maxage);
+
+    if (age >= min && age <= max) {
+      return item;
+    }
+
+    return false;
+  });
+
+  console.log('result: ', result);
+
+  res.json('result');
 };
 
 /**

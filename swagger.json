@@ -395,6 +395,14 @@
         "summary": "Find notice by keyword in title, standard response: page=1, limit=10",
         "parameters": [
           {
+            "name": "category",
+            "in": "query",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "query",
             "in": "query",
             "required": "true",

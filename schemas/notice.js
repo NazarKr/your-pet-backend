@@ -89,7 +89,7 @@ const joiStandartSchemaConfig = {
 
   // .format('YYYY-MM-DD').iso()
 
-  birthday: Joi.date().messages({
+  birthday: Joi.date().iso().messages({
     'string.empty': `"Birthday" cannot be empty`,
     'string.base': `"Birthday" must be date`,
   }),
