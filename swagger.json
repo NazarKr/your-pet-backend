@@ -970,7 +970,7 @@
             "type": "string",
             "description": "Comment about pet"
           },
-          "img": {
+          "noticeImage": {
             "type": "string",
             "description": "Pet's avatar url"
           },
