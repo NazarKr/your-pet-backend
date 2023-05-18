@@ -60,6 +60,12 @@ const addPetSchema = Joi.object({
     'string.base': `"Breed" must be string`,
   }),
 
+  petsImage: Joi.string().required().messages({
+    'any.required': `"Image" is required`,
+    'string.empty': `"Image" cannot be empty`,
+    'string.base': `"Image" must be string`,
+  }),
+
   comments: Joi.string().required().messages({
     'any.required': `"Comment" is required`,
     'string.empty': `"Comment" cannot be empty`,

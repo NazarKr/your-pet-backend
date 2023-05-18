@@ -38,8 +38,6 @@
       "post": {
         "tags": ["Users"],
         "summary": "User registration",
-        "parameters": [],
-        "security": [],
         "requestBody": {
           "description": "Registration's object",
           "required": true,
@@ -63,12 +61,10 @@
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
+            "description": "Bad request (invalid request body)"
           },
           "409": {
-            "description": "Email in use",
-            "content": {}
+            "description": "Email in use"
           }
         }
       }
@@ -77,8 +73,6 @@
       "post": {
         "tags": ["Users"],
         "summary": "User login",
-        "parameters": [],
-        "security": [],
         "requestBody": {
           "description": "Login's object",
           "required": true,
@@ -102,8 +96,7 @@
             }
           },
           "401": {
-            "description": "Email or password is wrong",
-            "content": {}
+            "description": "Email or password is wrong"
           }
         }
       }
@@ -112,9 +105,7 @@
       "get": {
         "tags": ["Users"],
         "summary": "Get current user",
-        "parameters": [],
         "security": [{ "Bearer": [] }],
-        "requestBody": [],
         "responses": {
           "200": {
             "description": "Got current user",
@@ -127,8 +118,7 @@
             }
           },
           "401": {
-            "description": "Invalid token",
-            "content": {}
+            "description": "Invalid token"
           }
         }
       }
@@ -137,7 +127,6 @@
       "patch": {
         "tags": ["Users"],
         "summary": "Update users profile",
-        "parameters": [],
         "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "User profile update object with at least one field",
@@ -162,8 +151,7 @@
             }
           },
           "400": {
-            "description": "Empty object",
-            "content": {}
+            "description": "Empty object"
           }
         }
       }
@@ -172,7 +160,6 @@
       "patch": {
         "tags": ["Users"],
         "summary": "Update users avatar",
-        "parameters": [],
         "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Multipart/form-data object with avatar field for .jpg or .png file",
@@ -206,17 +193,13 @@
       "post": {
         "tags": ["Users"],
         "summary": "Logout user",
-        "parameters": [],
         "security": [{ "Bearer": [] }],
-        "requestBody": {},
         "responses": {
           "200": {
-            "description": "Successfully logout",
-            "content": {}
+            "description": "Successfully logout"
           },
           "401": {
-            "description": "Unauthorized",
-            "content": {}
+            "description": "Unauthorized"
           }
         }
       }
@@ -224,13 +207,26 @@
     "/notices": {
       "get": {
         "tags": ["Notices"],
-        "summary": "Get all notices",
-        "parameters": [],
-        "security": [],
-        "requestBody": [],
+        "summary": "Get all notices, standard response: page=1, limit=10",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Got all notices",
+            "description": "Got all notices, standard response: page=1, limit=10",
             "content": {
               "application/json": {
                 "schema": {
@@ -244,8 +240,36 @@
             }
           },
           "404": {
-            "description": "Notices not found",
-            "content": {}
+            "description": "Notices not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Notices"],
+        "summary": "Add notice",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Notice object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNoticesObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Notice created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/NoticesObject"
+                }
+              }
+            }
           }
         }
       }
@@ -253,19 +277,32 @@
     "/notices/category/{category}": {
       "get": {
         "tags": ["Notices"],
-        "summary": "Get all notices by category",
+        "summary": "Get all notices by category, standard response: page=1, limit=10",
         "parameters": [
           {
             "name": "category",
             "in": "path",
             "required": "true",
+            "description": "enum: ['sell', 'lostFound', 'inGoodHands']",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
             "schema": {
               "type": "string"
             }
           }
         ],
-        "security": [],
-        "requestBody": [],
         "responses": {
           "200": {
             "description": "Got all notices by category",
@@ -282,8 +319,7 @@
             }
           },
           "404": {
-            "description": "{category} not found",
-            "content": {}
+            "description": "{category} not found"
           }
         }
       }
@@ -302,8 +338,6 @@
             }
           }
         ],
-        "security": [],
-        "requestBody": [],
         "responses": {
           "200": {
             "description": "Got notice by id",
@@ -317,30 +351,226 @@
             }
           },
           "404": {
-            "description": "{id} not found",
-            "content": {}
+            "description": "{id} not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Notices"],
+        "summary": "Delete notice",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notice successfully deleted"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          },
+          "404": {
+            "description": "Notice with {id} not found"
           }
         }
       }
     },
-    "/notices/add": {
-      "post": {
+    "/notices/find": {
+      "get": {
         "tags": ["Notices"],
-        "summary": "Add notice",
-        "parameters": [],
-        "security": [{ "Bearer": [] }],
-        "requestBody": [],
+        "summary": "Find notice by keyword in title, standard response: page=1, limit=10",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
-          "201": {
-            "description": "Notice created",
+          "200": {
+            "description": "Got notice by id, standard response: page=1, limit=10",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#/components/schemas/NoticesObject"
+                  "$ref": "#/components/schemas/getAllNoticesResponse"
                 }
               }
             }
+          },
+          "400": {
+            "description": "Query parameter required"
+          },
+          "404": {
+            "description": "Notices not found"
+          }
+        }
+      }
+    },
+    "/notices/my/favorite/:id": {
+      "patch": {
+        "tags": ["Notices"],
+        "summary": "Add notice to favorite",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully added to favorite"
+          },
+          "400": {
+            "description": "Notice already in favorite"
+          },
+          "404": {
+            "description": "Notices not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Notices"],
+        "summary": "Remove notice from favorite",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully removed from favorite"
+          },
+          "400": {
+            "description": "Notice not in favorite"
+          },
+          "404": {
+            "description": "Notices not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      }
+    },
+    "/notices/my/favorite": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "All favorite notices of the user, standard response: page=1, limit=10",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got all users favorite notices, standard response: page=1, limit=10",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/getAllNoticesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Favorite notices list is empty"
+          }
+        }
+      }
+    },
+    "/notices/my/created": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all notices created by user: page=1, limit=10",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got all notices created by user: page=1, limit=10",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/getAllNoticesResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User did not create notices"
+          },
+          "404": {
+            "description": "Notice not found"
           }
         }
       }
@@ -752,13 +982,6 @@
             "type": "string",
             "description": "Comment"
           },
-          "favorite": {
-            "type": "array",
-            "description": "array of IDs of those who added the notice to favorites",
-            "items": {
-              "type": "string"
-            }
-          },
           "img": {
             "type": "string",
             "description": "Image url"
@@ -773,14 +996,75 @@
           "category": "inGoodHands",
           "title": "Sell stets doggy",
           "name": "Pitsburg",
-          "birthday": "10/10/1000",
+          "birthday": "2019-02-13",
           "breed": "Bulldog",
           "sex": "male",
           "location": "stets",
           "price": 2333330,
           "comment": "stets stets, like stets play stets stets stets",
-          "favorite": ["6462647aae7c50c2bae9345b", "6462647aae7c50c2bae9345b"],
           "img": "http://img/dogs/bulldog",
+          "owner": "6462610994b8883816790126"
+        }
+      },
+      "AddNoticesObject": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string enum",
+            "description": "one of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pets name"
+          },
+          "birthday": {
+            "type": "string (date in iso format)",
+            "description": "Pets birthday"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pets breed"
+          },
+          "sex": {
+            "type": "string enum",
+            "description": "female, male"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment"
+          },
+          "noticeImage": {
+            "type": "string",
+            "description": "Image url"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owners Id"
+          }
+        },
+        "example": {
+          "category": "inGoodHands",
+          "title": "Sell stets doggy",
+          "name": "Pitsburg",
+          "birthday": "2019-02-13",
+          "breed": "Bulldog",
+          "sex": "male",
+          "location": "stets",
+          "price": 2333330,
+          "comment": "stets stets, like stets play stets stets stets",
+          "noticeImage": "http://img/dogs/bulldog",
           "owner": "6462610994b8883816790126"
         }
       },
