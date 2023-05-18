@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "0.5",
+    "version": "1.0",
     "title": "Your-pet Api docs",
     "description": "Api docs",
     "license": {
@@ -23,6 +23,10 @@
     {
       "name": "Notices",
       "description": "Notices endpoints"
+    },
+    {
+      "name": "Pets",
+      "description": "Pets endpoints"
     },
     {
       "name": "News",
@@ -112,7 +116,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CurrentResponse"
+                  "$ref": "#/components/schemas/ResponseUserObject"
                 }
               }
             }
@@ -145,7 +149,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CurrentResponse"
+                  "$ref": "#/components/schemas/ResponseUserObject"
                 }
               }
             }
@@ -233,7 +237,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "$ref": "#/components/schemas/getAllNoticesResponse"
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
                   }
                 }
               }
@@ -266,7 +270,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#/components/schemas/NoticesObject"
+                  "$ref": "#/components/schemas/ResponseNoticeObject"
                 }
               }
             }
@@ -312,7 +316,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "$ref": "#/components/schemas/getAllNoticesResponse"
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
                   }
                 }
               }
@@ -345,7 +349,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "$ref": "#/components/schemas/getNoticeById"
+                  "$ref": "#/components/schemas/ResponseByIdNoticeObject"
                 }
               }
             }
@@ -419,8 +423,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/getAllNoticesResponse"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
                 }
               }
             }
@@ -521,8 +528,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/getAllNoticesResponse"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
                 }
               }
             }
@@ -560,8 +570,11 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "$ref": "#/components/schemas/getAllNoticesResponse"
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
                 }
               }
             }
@@ -571,6 +584,90 @@
           },
           "404": {
             "description": "Notice not found"
+          }
+        }
+      }
+    },
+    "/pets": {
+      "get": {
+        "tags": ["Pets"],
+        "summary": "User and his pets",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Got user object and array of pets objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ResponseUserObject"
+                    },
+                    "pets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ResponsePetObject"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "{id} not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Pets"],
+        "summary": "Add pet",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "201": {
+            "description": "Pets object created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ResponsePetObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "delete": {
+        "tags": ["Pets"],
+        "summary": "Delete pet",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pet successfully deleted"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          },
+          "404": {
+            "description": "Notice with {id} not found"
           }
         }
       }
@@ -730,97 +827,7 @@
         },
         "example": { "email": "1@gmail.com" }
       },
-      "LoginResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string",
-            "description": "Authorization token"
-          },
-          "user": {
-            "type": "object",
-            "properties": {
-              "_id": {
-                "type": "string",
-                "description": "User's id"
-              },
-              "name": {
-                "type": "string or null",
-                "description": "User's name"
-              },
-              "email": {
-                "type": "string",
-                "description": "User's email",
-                "format": "email"
-              },
-              "birthday": {
-                "type": "string or null",
-                "description": "User's birthday in iso format"
-              },
-              "phone": {
-                "type": "string or null",
-                "description": "User's phone in international format +380..."
-              },
-              "city": {
-                "type": "string or null",
-                "description": "User's city"
-              },
-              "avatarUrl": {
-                "type": "string",
-                "description": "User's avatar url"
-              },
-              "verify": {
-                "type": "boolean",
-                "description": "Email verification"
-              },
-              "pets": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "description": "Pet's object",
-                  "properties": {}
-                },
-                "description": "User's pets"
-              },
-              "notices": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "description": "Notice object",
-                  "properties": {}
-                },
-                "description": "User's notices"
-              },
-              "favorite": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "description": "User's favorite notices",
-                  "properties": {}
-                },
-                "description": "User's notices"
-              }
-            }
-          }
-        },
-        "example": {
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDVkNDE5MWM3YzUzZWIwMmZhYzQxMGMiLCJuYW1lIjpudWxsLCJlbWFpbCI6Im1hZG5lenp6NUBnbWFpbC5jb20iLCJiaXJ0aGRheSI6bnVsbCwicGhvbmUiOm51bGwsImNpdHkiOm51bGwsImF2YXRhclVybCI6Ii8vd3d3LmdyYXZhdGFyLmNvbS9hdmF0YXIvZWFjNTQxYmQ4ZDJkOGI0MWRhNzhmYmRlZTBiMWNmMjQiLCJ2ZXJpZnkiOmZhbHNlLCJpYXQiOjE2ODM4MzYzNDcsImV4cCI6MTY4MzkxOTE0N30.a0O_jKSHq_3wbEzsx8iVKdEKCEhyBg21KJXTRYokNiQ",
-          "user": {
-            "_id": "645d4191c7c53eb02fac410c",
-            "name": null,
-            "email": "madnezzz5@gmail.com",
-            "birthday": null,
-            "phone": null,
-            "city": null,
-            "avatarUrl": "//www.gravatar.com/avatar/eac541bd8d2d8b41da78fbdee0b1cf24",
-            "verify": false,
-            "pets": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"],
-            "notices": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"],
-            "favorite": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"]
-          }
-        }
-      },
-      "CurrentResponse": {
+      "ResponseUserObject": {
         "type": "object",
         "properties": {
           "_id": {
@@ -828,7 +835,7 @@
             "description": "User's id"
           },
           "name": {
-            "type": "string or null",
+            "type": "string",
             "description": "User's name"
           },
           "email": {
@@ -837,15 +844,15 @@
             "format": "email"
           },
           "birthday": {
-            "type": "string or null",
+            "type": "string",
             "description": "User's birthday in iso format"
           },
           "phone": {
-            "type": "string or null",
+            "type": "string",
             "description": "User's phone in international format +380..."
           },
           "city": {
-            "type": "string or null",
+            "type": "string",
             "description": "User's city"
           },
           "avatarUrl": {
@@ -856,46 +863,163 @@
             "type": "boolean",
             "description": "Email verification"
           },
-          "pets": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "description": "Pet's object",
-              "properties": {}
-            },
-            "description": "User's pets"
-          },
-          "notices": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "description": "Notice object",
-              "properties": {}
-            },
-            "description": "User's notices"
-          },
           "favorite": {
             "type": "array",
             "items": {
               "type": "object",
-              "description": "Notice object",
-              "properties": {}
+              "description": "User's favorite notices",
+              "$ref": "#/components/schemas/ResponseNoticeObject"
             },
-            "description": "User's favorite notices"
+            "description": "User's notices"
           }
-        },
-        "example": {
-          "_id": "645d579dfedbaba1c5473ef2",
-          "name": "Some name",
-          "email": "some-mail@mail.com",
-          "birthday": "2011-10-05T14:48:00.000Z",
-          "phone": "+380123456789",
-          "city": "Melitopol",
-          "avatarUrl": "//www.gravatar.com/avatar/eac541bd8d2d8b41da78fbdee0b1cf24",
-          "verify": false,
-          "pets": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"],
-          "notices": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"],
-          "favorite": ["645d4191c7c53eb02fac410c", "645d4191c7c53eb02fac410c"]
+        }
+      },
+      "ResponseNoticeObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Pet's id"
+          },
+          "category": {
+            "type": "string",
+            "description": "One of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "sex": {
+            "type": "string",
+            "description": "male or female"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about pet"
+          },
+          "img": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owners Id"
+          }
+        }
+      },
+      "ResponseByIdNoticeObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Pet's id"
+          },
+          "category": {
+            "type": "string",
+            "description": "One of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "sex": {
+            "type": "string",
+            "description": "male or female"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about pet"
+          },
+          "img": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "owner": {
+            "type": "object",
+            "description": "User object",
+            "$ref": "#/components/schemas/ResponseUserObject"
+          }
+        }
+      },
+      "ResponsePetObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Pet's id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "petsImage": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about pet"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "$ref": "#/components/schemas/ResponseUserObject"
+          }
         }
       },
       "UpdateRequest": {
@@ -937,73 +1061,6 @@
         "example": {
           "avatarUrl": "https://res.cloudinary.com/dqejymgnk/image/upload/v1683897828/avatar/645e24c526c08528afa6d247_photo_2023-01-29_14-06-46.jpg.jpg",
           "message": "Avatar successfully changed"
-        }
-      },
-      "NoticesObject": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Mongodb objectId"
-          },
-          "category": {
-            "type": "string enum",
-            "description": "one of the three category: sell, lostFound, inGoodHands"
-          },
-          "title": {
-            "type": "string",
-            "description": "Title of the notice"
-          },
-          "name": {
-            "type": "string",
-            "description": "Pets name"
-          },
-          "birthday": {
-            "type": "string (date in iso format)",
-            "description": "Pets birthday"
-          },
-          "breed": {
-            "type": "string",
-            "description": "Pets breed"
-          },
-          "sex": {
-            "type": "string enum",
-            "description": "female, male"
-          },
-          "location": {
-            "type": "string",
-            "description": "City"
-          },
-          "price": {
-            "type": "integer",
-            "description": "Price"
-          },
-          "comment": {
-            "type": "string",
-            "description": "Comment"
-          },
-          "img": {
-            "type": "string",
-            "description": "Image url"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Owners Id"
-          }
-        },
-        "example": {
-          "_id": "6462647aae7c50c2bae9345b",
-          "category": "inGoodHands",
-          "title": "Sell stets doggy",
-          "name": "Pitsburg",
-          "birthday": "2019-02-13",
-          "breed": "Bulldog",
-          "sex": "male",
-          "location": "stets",
-          "price": 2333330,
-          "comment": "stets stets, like stets play stets stets stets",
-          "img": "http://img/dogs/bulldog",
-          "owner": "6462610994b8883816790126"
         }
       },
       "AddNoticesObject": {
@@ -1068,73 +1125,6 @@
           "owner": "6462610994b8883816790126"
         }
       },
-      "getAllNoticesResponse": {
-        "type": "array",
-        "description": "array of notices objects",
-        "items": {
-          "type": "object",
-          "description": "Notice object",
-          "$ref": "#/components/schemas/NoticesObject"
-        },
-        "example": [
-          {
-            "_id": "6462647aae7c50c2bae9345b",
-            "category": "inGoodHands",
-            "title": "Sell stets doggy",
-            "name": "Pitsburg",
-            "birthday": "10/10/1000",
-            "breed": "Bulldog",
-            "sex": "male",
-            "location": "stets",
-            "price": 2333330,
-            "comment": "stets stets, like stets play stets stets stets",
-            "favorite": [
-              "6462647aae7c50c2bae9345b",
-              "6462647aae7c50c2bae9345b"
-            ],
-            "img": "http://img/dogs/bulldog",
-            "owner": "6462610994b8883816790126"
-          },
-          {
-            "_id": "64626482ae7c50c2bae9345e",
-            "category": "sell",
-            "title": "Sell stets doggy",
-            "name": "Pitsburg",
-            "birthday": "10/10/1000",
-            "breed": "Bulldog",
-            "sex": "male",
-            "location": "stets",
-            "price": 2333330,
-            "comment": "stets stets, like stets play stets stets stets",
-            "favorite": [
-              "6462647aae7c50c2bae9345b",
-              "6462647aae7c50c2bae9345b"
-            ],
-            "img": "http://img/dogs/bulldog",
-            "owner": "6462610994b8883816790126"
-          }
-        ]
-      },
-      "getNoticeById": {
-        "type": "object",
-        "description": "Notice object",
-        "$ref": "#/components/schemas/NoticesObject",
-        "example": {
-          "_id": "64626491ae7c50c2bae93464",
-          "category": "inGoodHands",
-          "title": "Sell stets doggy",
-          "name": "Pitsburg",
-          "birthday": "10/10/1000",
-          "breed": "Bulldog",
-          "sex": "male",
-          "location": "stets",
-          "price": 2333330,
-          "comment": "stets stets, like stets play stets stets stets",
-          "favorite": ["6462647aae7c50c2bae9345b", "6462647aae7c50c2bae9345b"],
-          "img": "http://img/dogs/bulldog",
-          "owner": "6462610994b8883816790126"
-        }
-      },
       "NewsObjectResponse": {
         "type": "object",
         "properties": {
@@ -1166,27 +1156,7 @@
             "type": "string",
             "description": "News id"
           }
-        },
-        "example": [
-          {
-            "_id": "646142e97309f6c6b8c059bc",
-            "imgUrl": "https://www.nytimes.com/images/2023/04/16/magazine/16mag-LOR/16mag-LOR-blog480.jpg",
-            "title": "What I Learned Dogsitting for New York City’s Opulent Elite",
-            "text": "In a city of yawning class inequality, some side hustles let you glimpse how the other half lives.",
-            "date": "2023-04-11T09:00:18+0000",
-            "url": "https://www.nytimes.com/2023/04/11/magazine/dogsitting-rich-new-york.html",
-            "id": "nyt://article/8d29f1fc-d146-509d-8ceb-5a5b17d7886b"
-          },
-          {
-            "_id": "646142e97309f6c6b8c059bd",
-            "imgUrl": "https://www.nytimes.com/images/2023/04/04/multimedia/00VIRTUAL-VETS-01b-fmzk/00VIRTUAL-VETS-01b-fmzk-blog480.jpg",
-            "title": "The Virtual Vet Will See You Meow",
-            "text": "Veterinary telemedicine could help more pet owners access much-needed care and put anxious animals at ease, but challenges remain.",
-            "date": "2023-04-07T09:00:46+0000",
-            "url": "https://www.nytimes.com/2023/04/07/health/vet-pet-health-telemedicine.html",
-            "id": "nyt://article/992f2f7f-793c-5553-b722-348625f53a4b"
-          }
-        ]
+        }
       },
       "PartnersObjectResponse": {
         "type": "object",
@@ -1237,107 +1207,7 @@
               }
             }
           }
-        },
-        "example": [
-          {
-            "_id": "64614d436eecd7dcfdc69923",
-            "title": "Притулок для бездомних тварин 'Сіріус'",
-            "url": "https://dogcat.com.ua",
-            "addressUrl": "https://goo.gl/maps/iq8NXEUf31EAQCzc6",
-            "imageUrl": "https://storage.googleapis.com/kidslikev2_bucket/pets-support/images/sponsors/frame_287.png",
-            "address": "Fedorivka, Kyiv Oblast, Ukraine, 07372",
-            "workDays": [
-              {
-                "_id": "64621abc4fee37c4fb1956b0",
-                "isOpen": false
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b1",
-                "isOpen": false
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b2",
-                "isOpen": false
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b3",
-                "isOpen": false
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b4",
-                "isOpen": false
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b5",
-                "isOpen": true,
-                "from": "11:00",
-                "to": "16:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b6",
-                "isOpen": true,
-                "from": "11:00",
-                "to": "16:00"
-              }
-            ],
-            "phone": "+380931934069",
-            "email": null
-          },
-          {
-            "_id": "64614d436eecd7dcfdc69924",
-            "title": "Happy Paw",
-            "url": "https://happypaw.ua/ua",
-            "addressUrl": "https://goo.gl/maps/3RyzTYBvMr9WQWCC6",
-            "imageUrl": "https://storage.googleapis.com/kidslikev2_bucket/pets-support/images/sponsors/frame_288.png",
-            "address": "Київ, вулиця Шота Руставелі, 44 (3-й поверх, офіс 7)",
-            "workDays": [
-              {
-                "_id": "64621abc4fee37c4fb1956b7",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b8",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956b9",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956ba",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956bb",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956bc",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              },
-              {
-                "_id": "64621abc4fee37c4fb1956bd",
-                "isOpen": true,
-                "from": "09:00",
-                "to": "17:00"
-              }
-            ],
-            "phone": "+380442900329",
-            "email": "hello@happypaw.ua"
-          }
-        ]
+        }
       }
     },
     "securitySchemes": {
