@@ -1,36 +1,6 @@
-const { Pet, User } = require('../schemas');
+const { Pet } = require('../schemas');
 
-const { ctrlWrapper, HttpError } = require('../helpers');
-
-const getUserAndPets = async (req, res) => {
-  const { _id: owner } = req.user;
-
-  const result = await Pet.find({ owner }, '-createdAt -updatedAt').populate(
-    'owner',
-    'name email birthday phone city avatarUrl'
-  );
-  res.json(result);
-};
-
-// const getUserAndPets = async (req, res) => {
-//   const { _id } = req.user;
-
-//   console.log(req.user);
-
-//   const result = await User.findById(_id)
-//     .populate({
-//       path: 'pets',
-//       model: Pet,
-
-//     })
-//     .exec();
-
-//   // if (!result) {
-//   //   throw httpError(404, `Result not found`);
-//   // }
-
-//   res.status(200).json(result);
-// };
+const { ctrlWrapper, httpError } = require('../helpers');
 
 const addPet = async (req, res) => {
   const { _id: owner } = req.user;
@@ -42,22 +12,52 @@ const addPet = async (req, res) => {
   });
 
   if (!result) {
-    throw httpError(404, `Result not found`);
+    throw httpError(404);
   }
 
   res.status(201).json(result);
-
-  console.log(res);
 };
 
 const deletePet = async (req, res) => {
   const { id } = req.params;
+
   const result = await Pet.findByIdAndDelete(id);
-  console.log(result);
+
   if (!result) {
-    throw HttpError(404);
+    throw httpError(404);
   }
+
   res.status(200).json({ message: 'Delete success' });
+};
+
+const getUserAndPets = async (req, res) => {
+  const {
+    _id,
+    name,
+    email,
+    birthday,
+    phone,
+    city,
+    avatarUrl,
+    favorite,
+    verify,
+  } = req.user;
+
+  const pets = await Pet.find({ owner: _id }, '-createdAt -updatedAt -owner');
+
+  const user = {
+    _id,
+    name,
+    email,
+    birthday,
+    phone,
+    city,
+    avatarUrl,
+    favorite,
+    verify,
+  };
+
+  res.json({ user, pets });
 };
 
 module.exports = {

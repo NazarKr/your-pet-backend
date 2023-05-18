@@ -8,8 +8,6 @@ const { addPetSchema } = petSchemas;
 const { authentication, isValidId, imageUpload } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
-router.get('/', authentication, petsCtrl.getUserAndPets);
-
 router.post(
   '/',
   authentication,
@@ -19,5 +17,7 @@ router.post(
 );
 
 router.delete('/:id', authentication, isValidId, petsCtrl.deletePet);
+
+router.get('/', authentication, petsCtrl.getUserAndPets);
 
 module.exports = router;
