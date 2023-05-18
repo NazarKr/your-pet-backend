@@ -54,7 +54,7 @@ const noticeSchema = new Schema(
       max: [120, 'Comment should have a maximum length of 120'],
       required: [true, 'Comment is required'],
     },
-    img: {
+    noticeImage: {
       type: String,
       required: [true, 'Image is required'],
     },

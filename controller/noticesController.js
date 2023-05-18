@@ -169,7 +169,7 @@ const addNotice = async (req, res) => {
   const result = await Notice.create({
     ...req.body,
     owner,
-    img: req.file.path,
+    noticeImage: req.file.path,
   });
 
   if (!req.body || req.body === {}) {
