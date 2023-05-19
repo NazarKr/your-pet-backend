@@ -44,7 +44,7 @@ router.post(
   '/',
   authentication,
   imageUpload.single('noticeImage'),
-  validateBody(schemas.sellSchema),
+  validateBody(schemas.noticeJoiSchema),
   noticeCtrl.addNotice
 );
 

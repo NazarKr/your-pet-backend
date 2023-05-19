@@ -69,7 +69,7 @@ const noticeSchema = new Schema(
 
 // =========================================================== Joi схема ==========================================================
 
-// ================ Стандартні налаштування схеми (без обов'язкової ціни)
+// ================ Стандартні налаштування схеми
 const joiStandartSchemaConfig = {
   category: Joi.string().required().messages({
     'any.required': `"Category" is required`,
@@ -112,6 +112,12 @@ const joiStandartSchemaConfig = {
     'string.base': `"Location" must be string`,
   }),
 
+  price: Joi.number().messages({
+    'any.required': `"Price" is required`,
+    'string.empty': `"Price" cannot be empty`,
+    'string.base': `"Price" must be number`,
+  }),
+
   comment: Joi.string().min(3).max(120).required().messages({
     'any.required': `"Comment" is required`,
     'string.empty': `"Comment" cannot be empty`,
@@ -125,27 +131,14 @@ const joiStandartSchemaConfig = {
   }),
 };
 
-// ================= Схема для sell категорії
-const sellSchema = Joi.object({
-  ...joiStandartSchemaConfig,
-  price: Joi.number().required().messages({
-    'any.required': `"Price" is required`,
-    'string.empty': `"Location" cannot be empty`,
-    'string.base': `"Price" must be number`,
-  }),
-});
-
-// ================= Схема для lostFound/InGoodHands категорії
-const lostFound_inGoodHandsSchema = Joi.object(joiStandartSchemaConfig);
-
-// ================= Схема для додавання до обраних(Favorite)
+// ================= Схема Joi
+const noticeJoiSchema = Joi.object(joiStandartSchemaConfig);
 
 noticeSchema.post('save', handleMongooseError);
 
 const schemas = {
   noticeSchema,
-  sellSchema,
-  lostFound_inGoodHandsSchema,
+  noticeJoiSchema,
 };
 
 const Notice = model('notice', noticeSchema);
