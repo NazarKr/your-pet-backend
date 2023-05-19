@@ -1,11 +1,6 @@
 const { Notice, User } = require('../schemas');
 
-const {
-  httpError,
-  ctrlWrapper,
-  skipPages,
-  calculateAge,
-} = require('../helpers');
+const { httpError, ctrlWrapper, skipPages } = require('../helpers');
 
 /**
  * ============================ Все объявления
@@ -64,42 +59,46 @@ const getNoticeByCategory = async (req, res) => {
     maxage = null,
   } = req.query;
 
-  const sexFilter = () => {
-    if (!sex) {
-      return { category };
+  const today = new Date();
+  const minAge = new Date();
+  const maxAge = new Date();
+
+  minAge.setMonth(today.getMonth() - parseInt(minage) * 12);
+  maxAge.setMonth(today.getMonth() - parseInt(maxage) * 12);
+
+  console.log('minAge: ', minAge);
+  console.log('maxAge: ', maxAge);
+
+  const notices = await Notice.find(
+    { birthday: { $gte: minAge, $lte: maxAge } },
+    '-createdAt -updatedAt',
+    {
+      skip: skipPages(page, limit),
+      limit,
     }
-
-    return { category, sex };
-  };
-
-  const notices = await Notice.find(sexFilter(), '-createdAt -updatedAt', {
-    skip: skipPages(page, limit),
-    limit,
-  });
+  );
 
   if (!notices) {
     throw httpError(404, `${category} not found`);
   }
 
-  const result = notices.filter(item => {
-    const { birthday } = item;
+  // const result = notices.filter(item => {
+  //   const { birthday } = item;
 
-    const today = new Date().getFullYear();
+  //   const today = new Date().getFullYear();
 
-    const age = today - new Date(birthday).getFullYear();
-    const min = parseInt(minage);
-    const max = parseInt(maxage);
+  //   const age = today - new Date(birthday).getFullYear();
+  //   const min = parseInt(minage);
+  //   const max = parseInt(maxage);
 
-    if (age >= min && age <= max) {
-      return item;
-    }
+  //   if (age >= min && age <= max) {
+  //     return item;
+  //   }
 
-    return false;
-  });
+  //   return false;
+  // });
 
-  console.log('result: ', result);
-
-  res.json('result');
+  res.json(notices);
 };
 
 /**
@@ -192,9 +191,12 @@ const allFavorite = async (req, res) => {
 const addNotice = async (req, res) => {
   const { _id: owner } = req.user;
 
+  console.log('birthday: ', req.body.birthday);
+
   const result = await Notice.create({
     ...req.body,
     owner,
+    birthday: new Date(req.body.birthday).toISOString(),
     noticeImage: req.file.path,
   });
 
