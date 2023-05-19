@@ -82,22 +82,6 @@ const getNoticeByCategory = async (req, res) => {
     throw httpError(404, `${category} not found`);
   }
 
-  // const result = notices.filter(item => {
-  //   const { birthday } = item;
-
-  //   const today = new Date().getFullYear();
-
-  //   const age = today - new Date(birthday).getFullYear();
-  //   const min = parseInt(minage);
-  //   const max = parseInt(maxage);
-
-  //   if (age >= min && age <= max) {
-  //     return item;
-  //   }
-
-  //   return false;
-  // });
-
   res.json(notices);
 };
 
