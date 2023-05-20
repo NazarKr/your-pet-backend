@@ -195,12 +195,9 @@ const allFavorite = async (req, res) => {
 const addNotice = async (req, res) => {
   const { _id: owner } = req.user;
 
-  console.log('birthday: ', req.body.birthday);
-
   const result = await Notice.create({
     ...req.body,
     owner,
-    birthday: new Date(req.body.birthday).toISOString(),
     noticeImage: req.file.path,
   });
 
