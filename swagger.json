@@ -256,7 +256,7 @@
           "description": "Notice object",
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "$ref": "#/components/schemas/AddNoticesObject"
               }
@@ -661,6 +661,17 @@
         "tags": ["Pets"],
         "summary": "Add pet",
         "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Notice object",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPetObject"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "Pets object created",
@@ -1013,6 +1024,31 @@
           }
         }
       },
+      "RequestPetObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "petsImage": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Comment about pet"
+          }
+        }
+      },
       "ResponsePetObject": {
         "type": "object",
         "properties": {
@@ -1137,10 +1173,6 @@
           "noticeImage": {
             "type": "string",
             "description": "Image url"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Owners Id"
           }
         },
         "example": {
