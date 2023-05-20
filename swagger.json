@@ -1036,7 +1036,7 @@
             "type": "string",
             "description": "Pet's avatar url"
           },
-          "comment": {
+          "comments": {
             "type": "string",
             "description": "Comment about pet"
           }
