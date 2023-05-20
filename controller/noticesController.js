@@ -1,11 +1,5 @@
 const { Notice, User } = require('../schemas');
-
-const {
-  httpError,
-  ctrlWrapper,
-  skipPages,
-  calculateAge,
-} = require('../helpers');
+const { httpError, ctrlWrapper, skipPages } = require('../helpers');
 
 /**
  * ============================ Все объявления
@@ -29,14 +23,14 @@ const listAllNotice = async (req, res) => {
  * ============================ Поиск объявлений
  */
 const findNotices = async (req, res) => {
-  const { query = null, page = 1, limit = 10 } = req.query;
+  const { query = null, category = null, page = 1, limit = 10 } = req.query;
 
-  if (!query) {
-    throw httpError(400, 'Query parameter required');
+  if (!query || !category) {
+    throw httpError(400, 'Query and category parameters required');
   }
 
   const result = await Notice.find(
-    { $text: { $search: query } },
+    { category, $text: { $search: query } },
     '-createdAt -updatedAt',
     {
       skip: skipPages(page, limit),
@@ -56,21 +50,56 @@ const findNotices = async (req, res) => {
  */
 const getNoticeByCategory = async (req, res) => {
   const { category } = req.params;
-  const { page = 1, limit = 10, sex, minage, maxage } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    sex = null,
+    minage = null,
+    maxage = null,
+  } = req.query;
 
-  // 3-12
-  // 1
-  // 2
+  const today = new Date();
+  const minBirthday = new Date();
+  const maxBirthday = new Date();
 
-  // const age = calculateAge(birth);
+  minBirthday.setMonth(today.getMonth() - parseInt(minage) * 12);
+  maxBirthday.setMonth(today.getMonth() - parseInt(maxage) * 12);
 
-  const result = await Notice.find({ category }, '-createdAt -updatedAt', {
+  const filters = { category };
+
+  if (sex) {
+    filters.sex = sex;
+  }
+
+  const birthday = {};
+
+  if (maxage) {
+    birthday.$gte = maxBirthday;
+  }
+
+  if (minage) {
+    birthday.$lte = minBirthday;
+  }
+
+  if (minage || maxage) {
+    filters.birthday = birthday;
+  }
+
+  const result = await Notice.find(filters, '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
   });
 
+  if (!category) {
+    throw httpError(400, `Category required`);
+  }
+
+  if (result === []) {
+    throw httpError(404, 'Notices with the given parameters were not found');
+  }
+
   if (!result) {
-    throw httpError(404, `${category} not found`);
+    throw httpError(404);
   }
 
   res.json(result);

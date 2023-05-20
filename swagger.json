@@ -293,6 +293,30 @@
             }
           },
           {
+            "name": "sex",
+            "in": "query",
+            "description": "enum: ['male', 'female']",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "minage",
+            "in": "query",
+            "description": "Minimum age of the pet in years ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxage",
+            "in": "query",
+            "description": "Maximum age of the pet in years ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "schema": {
@@ -394,6 +418,14 @@
         "tags": ["Notices"],
         "summary": "Find notice by keyword in title, standard response: page=1, limit=10",
         "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "query",
             "in": "query",
