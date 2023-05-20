@@ -1,5 +1,4 @@
 const { Notice, User } = require('../schemas');
-
 const { httpError, ctrlWrapper, skipPages } = require('../helpers');
 
 /**
@@ -60,29 +59,50 @@ const getNoticeByCategory = async (req, res) => {
   } = req.query;
 
   const today = new Date();
-  const minAge = new Date();
-  const maxAge = new Date();
+  const minBirthday = new Date();
+  const maxBirthday = new Date();
 
-  minAge.setMonth(today.getMonth() - parseInt(minage) * 12);
-  maxAge.setMonth(today.getMonth() - parseInt(maxage) * 12);
+  minBirthday.setMonth(today.getMonth() - parseInt(minage) * 12);
+  maxBirthday.setMonth(today.getMonth() - parseInt(maxage) * 12);
 
-  console.log('minAge: ', minAge);
-  console.log('maxAge: ', maxAge);
+  const filters = { category };
 
-  const notices = await Notice.find(
-    { birthday: { $gte: minAge, $lte: maxAge } },
-    '-createdAt -updatedAt',
-    {
-      skip: skipPages(page, limit),
-      limit,
-    }
-  );
-
-  if (!notices) {
-    throw httpError(404, `${category} not found`);
+  if (sex) {
+    filters.sex = sex;
   }
 
-  res.json(notices);
+  const birthday = {};
+
+  if (maxage) {
+    birthday.$gte = maxBirthday;
+  }
+
+  if (minage) {
+    birthday.$lte = minBirthday;
+  }
+
+  if (minage || maxage) {
+    filters.birthday = birthday;
+  }
+
+  const result = await Notice.find(filters, '-createdAt -updatedAt', {
+    skip: skipPages(page, limit),
+    limit,
+  });
+
+  if (!category) {
+    throw httpError(400, `Category required`);
+  }
+
+  if (result === []) {
+    throw httpError(404, 'Notices with the given parameters were not found');
+  }
+
+  if (!result) {
+    throw httpError(404);
+  }
+
+  res.json(result);
 };
 
 /**

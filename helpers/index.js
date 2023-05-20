@@ -4,7 +4,6 @@ const validateBody = require('./validateBody');
 const handleMongooseError = require('./handleMongooseError');
 const sendEmail = require('./sendEmail');
 const skipPages = require('./skip');
-const calculateAge = require('./calculateAge');
 
 module.exports = {
   ctrlWrapper,
@@ -13,5 +12,4 @@ module.exports = {
   handleMongooseError,
   sendEmail,
   skipPages,
-  calculateAge,
 };
