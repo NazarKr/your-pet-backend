@@ -1,13 +1,13 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const gravatar = require('gravatar');
+// const gravatar = require('gravatar');
 // const { nanoid } = require('nanoid');
 
 require('dotenv').config();
 
 const { User } = require('../schemas');
 const { httpError, ctrlWrapper, sendEmail } = require('../helpers');
-const { SECRET } = process.env;
+const { SECRET, FONTEND_URL } = process.env;
 
 /**
  * ============================ Регистрация пользователя
@@ -147,6 +147,33 @@ const loginUser = async (req, res) => {
 };
 
 /**
+ * ============================ Авторизация через google
+ */
+const googleAuth = async (req, res) => {
+  const { user } = req;
+
+  const payload = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    birthday: user.birthday,
+    phone: user.phone,
+    city: user.city,
+    avatarUrl: user.avatarUrl,
+    pets: user.pets,
+    notices: user.notices,
+    favorite: user.favorite,
+    verify: user.verify,
+  };
+
+  const token = jwt.sign(payload, SECRET, { expiresIn: '23h' });
+
+  await User.findByIdAndUpdate(user._id, { token });
+
+  res.redirect(`${FONTEND_URL}?token=${token}`);
+};
+
+/**
  * ============================ Текущий пользователь
  */
 const getCurrentUser = async (req, res) => {
@@ -223,6 +250,7 @@ module.exports = {
   // verify: ctrlWrapper(verify),
   // reVerify: ctrlWrapper(reVerify),
   login: ctrlWrapper(loginUser),
+  googleAuth: ctrlWrapper(googleAuth),
   current: ctrlWrapper(getCurrentUser),
   update: ctrlWrapper(userUpdate),
   logout: ctrlWrapper(logout),
