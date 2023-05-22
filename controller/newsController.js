@@ -1,6 +1,6 @@
 const { Article } = require('../schemas');
 
-const { httpError, ctrlWrapper } = require('../helpers');
+const { httpError, ctrlWrapper, totalPages } = require('../helpers');
 
 /**
  * ============================ Получение новостей
@@ -15,7 +15,13 @@ const getAllNews = async (req, res) => {
     limit,
   });
 
-  res.status(200).json(news);
+  const total = await Article.countDocuments();
+
+  res.status(200).json({
+    data: news,
+    currentPage: page,
+    totalPages: totalPages(total, limit),
+  });
 };
 
 /**

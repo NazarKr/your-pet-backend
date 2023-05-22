@@ -1,5 +1,5 @@
 const { Notice, User } = require('../schemas');
-const { httpError, ctrlWrapper, skipPages } = require('../helpers');
+const { httpError, ctrlWrapper, skipPages, totalPages } = require('../helpers');
 
 /**
  * ============================ Все объявления
@@ -12,11 +12,17 @@ const listAllNotice = async (req, res) => {
     limit,
   });
 
+  const total = await Notice.countDocuments();
+
   if (!result) {
     throw httpError(404, `Notices not found`);
   }
 
-  res.json(result);
+  res.json({
+    data: result,
+    currentPage: page,
+    totalPages: totalPages(total, limit),
+  });
 };
 
 /**
@@ -38,11 +44,20 @@ const findNotices = async (req, res) => {
     }
   );
 
+  const total = await Notice.countDocuments({
+    category,
+    $text: { $search: query },
+  });
+
   if (result.length === 0) {
     throw httpError(404, `Notices not found`);
   }
 
-  res.status(200).json(result);
+  res.status(200).json({
+    data: result,
+    currentPage: page,
+    totalPages: totalPages(total, limit),
+  });
 };
 
 /**
@@ -90,6 +105,8 @@ const getNoticeByCategory = async (req, res) => {
     limit,
   });
 
+  const total = await Notice.countDocuments(filters);
+
   if (!category) {
     throw httpError(400, `Category required`);
   }
@@ -102,7 +119,11 @@ const getNoticeByCategory = async (req, res) => {
     throw httpError(404);
   }
 
-  res.json(result);
+  res.json({
+    data: result,
+    currentPage: page,
+    totalPages: totalPages(total, limit),
+  });
 };
 
 /**
@@ -168,14 +189,11 @@ const removeFromFavorite = async (req, res) => {
  */
 const allFavorite = async (req, res) => {
   const { _id } = req.user;
-  const { page = 1, limit = 10 } = req.query;
 
   const result = await User.findById(_id, '', {
     fields: {
       favorite: 1,
     },
-    skip: skipPages(page, limit),
-    limit,
   }).populate('favorite', '-createdAt -updatedAt');
 
   if (result.favorite.length === 0) {
@@ -241,6 +259,8 @@ const myNotices = async (req, res) => {
     limit,
   });
 
+  const total = await Notice.countDocuments({ owner });
+
   if (result.length === 0) {
     throw httpError(404, `User did not create notices`);
   }
@@ -249,7 +269,11 @@ const myNotices = async (req, res) => {
     throw httpError(404, `Notice not found`);
   }
 
-  res.json(result);
+  res.json({
+    data: result,
+    currentPage: page,
+    totalPages: totalPages(total, limit),
+  });
 };
 
 module.exports = {
