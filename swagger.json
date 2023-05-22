@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "1.1",
+    "version": "1.2",
     "title": "Your-pet Api docs",
     "description": "Api docs",
     "license": {
@@ -234,10 +234,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ResponseNoticeObject"
+                      }
+                    },
+                    "currentPage": {
+                      "type": "string"
+                    },
+                    "totalPages": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -337,10 +348,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ResponseNoticeObject"
+                      }
+                    },
+                    "currentPage": {
+                      "type": "string"
+                    },
+                    "totalPages": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -455,10 +477,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ResponseNoticeObject"
+                      }
+                    },
+                    "currentPage": {
+                      "type": "string"
+                    },
+                    "totalPages": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -602,10 +635,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ResponseNoticeObject"
+                      }
+                    },
+                    "currentPage": {
+                      "type": "string"
+                    },
+                    "totalPages": {
+                      "type": "string"
+                    }
                   }
                 }
               }
@@ -746,10 +790,21 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "$ref": "#/components/schemas/NewsObjectResponse"
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/NewsObjectResponse"
+                      }
+                    },
+                    "currentPage": {
+                      "type": "string"
+                    },
+                    "totalPages": {
+                      "type": "string"
+                    }
                   }
                 }
               }
