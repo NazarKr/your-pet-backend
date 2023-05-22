@@ -1,22 +1,14 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const gravatar = require('gravatar');
-const fs = require('fs/promises');
-const { nanoid } = require('nanoid');
-const path = require('path');
+// const { nanoid } = require('nanoid');
 
 require('dotenv').config();
 
 const { User } = require('../schemas');
-const {
-  httpError,
-  ctrlWrapper,
-  resizeImage,
-  sendEmail,
-} = require('../helpers');
-const HttpError = require('../helpers/httpError');
+
+const { httpError, ctrlWrapper } = require('../helpers');
+
 const { ACCES_SECRET, REFRESH_SECRET, BASE_URL } = process.env;
-const avatarsDir = path.join(__dirname, '../', 'public', 'avatars');
 
 /**
  * ============================ Регистрация пользователя
@@ -31,14 +23,14 @@ const registerUser = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
-  const avatarUrl = gravatar.url(email);
 
   // const verifycationToken = nanoid();
 
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
-    avatarUrl,
+    avatarUrl:
+      'https://res.cloudinary.com/dqejymgnk/image/upload/v1684344303/avatar/Group_1000002112_2x_i1bd8a.png',
     // verifycationToken,
   });
 
@@ -112,7 +104,10 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate(
+    'favorite',
+    '-createdAt -updatedAt'
+  );
 
   if (!user) {
     throw httpError(401, `Email or password is wrong`);
@@ -136,6 +131,9 @@ const loginUser = async (req, res) => {
     phone: user.phone,
     city: user.city,
     avatarUrl: user.avatarUrl,
+    pets: user.pets,
+    notices: user.notices,
+    favorite: user.favorite,
     verify: user.verify,
   };
 
@@ -155,14 +153,14 @@ const loginUser = async (req, res) => {
  * ============================ Текущий пользователь
  */
 const getCurrentUser = async (req, res) => {
-  const { name, email, birthday, phone, city, avatarUrl, verify, _id } =
-    req.user;
+  const { _id } = req.user;
 
-  console.log(req.user);
+  const user = await User.findById(
+    _id,
+    '-createdAt -updatedAt -password -token -verifycationToken'
+  ).populate('favorite', '-createdAt -updatedAt');
 
-  res
-    .status(200)
-    .json({ name, email, birthday, phone, city, avatarUrl, verify, _id });
+  res.status(200).json(user);
 };
 
 /**
@@ -208,7 +206,16 @@ const userRefresh = async (req, res) => {
 const userUpdate = async (req, res) => {
   const { _id } = req.user;
 
-  const result = await User.findByIdAndUpdate(_id, req.body, { new: true });
+  const result = await User.findByIdAndUpdate(_id, req.body, {
+    new: true,
+    fields: {
+      token: 0,
+      password: 0,
+      verifycationToken: 0,
+      createdAt: 0,
+      updatedAt: 0,
+    },
+  }).populate('favorite', '-createdAt -updatedAt');
 
   res.status(200).json(result);
 };
@@ -228,24 +235,27 @@ const logout = async (req, res) => {
  * ============================ Обновление аватарки пользователя
  */
 const updateAvatar = async (req, res) => {
-  // const { _id } = req.user;
+  const { _id } = req.user;
 
-  // const { path: tempUpload, filename } = req.file;
+  try {
+    const result = await User.findByIdAndUpdate(
+      _id,
+      { avatarUrl: req.file.path },
+      {
+        new: true,
+        fields: {
+          avatarUrl: 1,
+        },
+      }
+    );
 
-  // const avatarName = `${_id}_${filename}`;
-  // const resultUpload = path.join(avatarsDir, avatarName);
-
-  // await resizeImage(tempUpload, 250, 250);
-
-  // await fs.rename(tempUpload, resultUpload);
-  // const avatarUrl = path.join('avatars', avatarName);
-
-  // await User.findByIdAndUpdate(_id, { avatarUrl });
-
-  res.status(200).json({
-    // avatarUrl,
-    message: `Avatar successfully changed`,
-  });
+    res.status(200).json({
+      avatarUrl: result.avatarUrl,
+      message: `Avatar successfully updated`,
+    });
+  } catch (error) {
+    throw httpError(400);
+  }
 };
 
 module.exports = {

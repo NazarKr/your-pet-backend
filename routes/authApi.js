@@ -4,10 +4,10 @@ const router = express.Router();
 const { authCtrl } = require('../controller');
 
 const { userValidation } = require('../schemas');
-const { authentication, upload } = require('../middlewares');
+const { authentication, imageUpload } = require('../middlewares');
 const { validateBody } = require('../helpers');
 
-const { userRegisterShema, emailShema, userLoginShema, refreshShema } =
+const { userRegisterShema, userLoginShema, userUpdateShema, refreshShema } =
   userValidation;
 
 router.post('/register', validateBody(userRegisterShema), authCtrl.register);
@@ -22,14 +22,19 @@ router.post('/refresh', validateBody(refreshShema), authCtrl.refresh);
 
 router.get('/current', authentication, authCtrl.current);
 
-router.patch('/update', authentication, authCtrl.update);
+router.patch(
+  '/update',
+  authentication,
+  validateBody(userUpdateShema),
+  authCtrl.update
+);
 
 router.post('/logout', authentication, authCtrl.logout);
 
 router.patch(
   '/avatars',
   authentication,
-  // upload.single('avatar'),
+  imageUpload.single('avatar'),
   authCtrl.updateAvatar
 );
 

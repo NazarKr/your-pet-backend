@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "version": "0.0",
+    "version": "1.1",
     "title": "Your-pet Api docs",
     "description": "Api docs",
     "license": {
@@ -13,21 +13,35 @@
   "produces": ["application/json"],
   "servers": [
     { "url": "https://your-pet-backend-jfrs.onrender.com" },
-    { "url": "https://localhost:8989" }
+    { "url": "http://localhost:8989" }
   ],
   "tags": [
     {
-      "name": "Auth",
-      "description": "Authorization endpoints"
+      "name": "Users",
+      "description": "User authorization and update endpoints"
+    },
+    {
+      "name": "Notices",
+      "description": "Notices endpoints"
+    },
+    {
+      "name": "Pets",
+      "description": "Pets endpoints"
+    },
+    {
+      "name": "News",
+      "description": "News endpoints"
+    },
+    {
+      "name": "Partners",
+      "description": "Partners endpoints"
     }
   ],
   "paths": {
-    "/api/users/register": {
+    "/users/register": {
       "post": {
-        "tags": ["Auth"],
+        "tags": ["Users"],
         "summary": "User registration",
-        "parameters": [],
-        "security": [{ "Bearer": [] }],
         "requestBody": {
           "description": "Registration's object",
           "required": true,
@@ -51,12 +65,777 @@
             }
           },
           "400": {
-            "description": "Bad request (invalid request body)",
-            "content": {}
+            "description": "Bad request (invalid request body)"
           },
           "409": {
-            "description": "Provided email already exists",
-            "content": {}
+            "description": "Email in use"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "User login",
+        "requestBody": {
+          "description": "Login's object",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegistrationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User is logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email or password is wrong"
+          }
+        }
+      }
+    },
+    "/users/current": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get current user",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Got current user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseUserObject"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
+    "/users/update": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update users profile",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "User profile update object with at least one field",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Users profile updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseUserObject"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Empty object"
+          }
+        }
+      }
+    },
+    "/users/avatars": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update users avatar",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Multipart/form-data object with avatar field for .jpg or .png file",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvatarRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateAvatarResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/users/logout": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Logout user",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully logout"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/notices": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all notices, standard response: page=1, limit=10",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got all notices, standard response: page=1, limit=10",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Notices not found"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Notices"],
+        "summary": "Add notice",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Notice object",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNoticesObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Notice created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ResponseNoticeObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notices/category/{category}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all notices by category, standard response: page=1, limit=10",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": "true",
+            "description": "enum: ['sell', 'lostFound', 'inGoodHands']",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sex",
+            "in": "query",
+            "description": "enum: ['male', 'female']",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "minage",
+            "in": "query",
+            "description": "Minimum age of the pet in years ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "maxage",
+            "in": "query",
+            "description": "Maximum age of the pet in years ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got all notices by category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "{category} not found"
+          }
+        }
+      }
+    },
+    "/notices/{id}": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get notice by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got notice by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ResponseByIdNoticeObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "{id} not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Notices"],
+        "summary": "Delete notice",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notice successfully deleted"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          },
+          "404": {
+            "description": "Notice with {id} not found"
+          }
+        }
+      }
+    },
+    "/notices/find": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Find notice by keyword in title, standard response: page=1, limit=10",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got notice by id, standard response: page=1, limit=10",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query parameter required"
+          },
+          "404": {
+            "description": "Notices not found"
+          }
+        }
+      }
+    },
+    "/notices/my/favorite/:id": {
+      "patch": {
+        "tags": ["Notices"],
+        "summary": "Add notice to favorite",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully added to favorite"
+          },
+          "400": {
+            "description": "Notice already in favorite"
+          },
+          "404": {
+            "description": "Notices not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Notices"],
+        "summary": "Remove notice from favorite",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully removed from favorite"
+          },
+          "400": {
+            "description": "Notice not in favorite"
+          },
+          "404": {
+            "description": "Notices not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      }
+    },
+    "/notices/my/favorite": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "All favorite notices of the user, standard response: page=1, limit=10",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got all users favorite notices, standard response: page=1, limit=10",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Favorite notices list is empty"
+          }
+        }
+      }
+    },
+    "/notices/my/created": {
+      "get": {
+        "tags": ["Notices"],
+        "summary": "Get all notices created by user: page=1, limit=10",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Got all notices created by user: page=1, limit=10",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/ResponseNoticeObject"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User did not create notices"
+          },
+          "404": {
+            "description": "Notice not found"
+          }
+        }
+      }
+    },
+    "/pets": {
+      "get": {
+        "tags": ["Pets"],
+        "summary": "User and his pets",
+        "security": [{ "Bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Got user object and array of pets objects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/ResponseUserObject"
+                    },
+                    "pets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "$ref": "#/components/schemas/ResponsePetObject"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "{id} not found"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Pets"],
+        "summary": "Add pet",
+        "security": [{ "Bearer": [] }],
+        "requestBody": {
+          "description": "Notice object",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPetObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Pets object created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/ResponsePetObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pets/{id}": {
+      "delete": {
+        "tags": ["Pets"],
+        "summary": "Delete pet",
+        "security": [{ "Bearer": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": "true",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pet successfully deleted"
+          },
+          "404": {
+            "description": "{id} invalid format"
+          },
+          "404": {
+            "description": "Notice with {id} not found"
+          }
+        }
+      }
+    },
+    "/news": {
+      "get": {
+        "tags": ["News"],
+        "summary": "Get all news",
+        "description": "Array of news objects, standard response without page and limit parameters returns an array of 10 news items from the first page",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of page"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of items in page"
+          }
+        ],
+        "security": [],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "Successfully loaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/NewsObjectResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/news/find": {
+      "get": {
+        "tags": ["News"],
+        "summary": "Find news",
+        "description": "Array of news objects found by keyword",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Keyword"
+          }
+        ],
+        "security": [],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "Successfully loaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/NewsObjectResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Query parameter required"
+          }
+        }
+      }
+    },
+    "/partners": {
+      "get": {
+        "tags": ["Partners"],
+        "summary": "Get all partners",
+        "description": "Array of partners objects, standard response without page and limit parameters returns an array of 10 partners items from the first page",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of page"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "The number of items in page"
+          }
+        ],
+        "security": [],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "Successfully loaded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/PartnersObjectResponse"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -75,8 +854,8 @@
           },
           "password": {
             "type": "string",
-            "description": "User's password",
-            "example": "qwerty123"
+            "description": "User's password should have at least 1 uppercase letter, 1 lowercase letter and 1 digit!",
+            "example": "Qwerty123"
           }
         }
       },
@@ -90,6 +869,409 @@
           }
         },
         "example": { "email": "1@gmail.com" }
+      },
+      "ResponseUserObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "User's id"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's name"
+          },
+          "email": {
+            "type": "string",
+            "description": "User's email",
+            "format": "email"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "User's birthday in iso format"
+          },
+          "phone": {
+            "type": "string",
+            "description": "User's phone in international format +380..."
+          },
+          "city": {
+            "type": "string",
+            "description": "User's city"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "description": "User's avatar url"
+          },
+          "verify": {
+            "type": "boolean",
+            "description": "Email verification"
+          },
+          "favorite": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "User's favorite notices",
+              "$ref": "#/components/schemas/ResponseNoticeObject"
+            },
+            "description": "User's notices"
+          }
+        }
+      },
+      "ResponseNoticeObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Pet's id"
+          },
+          "category": {
+            "type": "string",
+            "description": "One of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "sex": {
+            "type": "string",
+            "description": "male or female"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about pet"
+          },
+          "noticeImage": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owners Id"
+          }
+        }
+      },
+      "ResponseByIdNoticeObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Pet's id"
+          },
+          "category": {
+            "type": "string",
+            "description": "One of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "sex": {
+            "type": "string",
+            "description": "male or female"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment about pet"
+          },
+          "noticeImage": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "owner": {
+            "type": "object",
+            "description": "User object",
+            "$ref": "#/components/schemas/ResponseUserObject"
+          }
+        }
+      },
+      "RequestPetObject": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "petsImage": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Comment about pet"
+          }
+        }
+      },
+      "ResponsePetObject": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Pet's id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pet's name"
+          },
+          "birthday": {
+            "type": "string",
+            "description": "Pet's birthday in iso format"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pet's breed"
+          },
+          "petsImage": {
+            "type": "string",
+            "description": "Pet's avatar url"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Comment about pet"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "$ref": "#/components/schemas/ResponseUserObject"
+          }
+        }
+      },
+      "UpdateRequest": {
+        "type": "object",
+        "required": ["somePropertie"],
+        "properties": {
+          "somePropertie": {
+            "type": "propertie type",
+            "description": "Propertie to change"
+          }
+        },
+        "example": {
+          "name": "Some name"
+        }
+      },
+      "UpdateAvatarRequest": {
+        "required": true,
+        "properties": {
+          "avatar": {
+            "type": "string",
+            "format": "binary"
+          }
+        },
+        "example": {
+          "avatar": "some-file.jpg"
+        }
+      },
+      "UpdateAvatarResponse": {
+        "properties": {
+          "avatarUrl": {
+            "type": "string",
+            "description": "Image link"
+          },
+          "message": {
+            "type": "string",
+            "description": "Avatar successfully updated"
+          }
+        },
+        "example": {
+          "avatarUrl": "https://res.cloudinary.com/dqejymgnk/image/upload/v1683897828/avatar/645e24c526c08528afa6d247_photo_2023-01-29_14-06-46.jpg.jpg",
+          "message": "Avatar successfully changed"
+        }
+      },
+      "AddNoticesObject": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string enum",
+            "description": "one of the three category: sell, lostFound, inGoodHands"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title of the notice"
+          },
+          "name": {
+            "type": "string",
+            "description": "Pets name"
+          },
+          "birthday": {
+            "type": "string (date in iso format)",
+            "description": "Pets birthday"
+          },
+          "breed": {
+            "type": "string",
+            "description": "Pets breed"
+          },
+          "sex": {
+            "type": "string enum",
+            "description": "female, male"
+          },
+          "location": {
+            "type": "string",
+            "description": "City"
+          },
+          "price": {
+            "type": "integer",
+            "description": "Price"
+          },
+          "comment": {
+            "type": "string",
+            "description": "Comment"
+          },
+          "noticeImage": {
+            "type": "string",
+            "description": "Image url"
+          }
+        },
+        "example": {
+          "category": "inGoodHands",
+          "title": "Sell stets doggy",
+          "name": "Pitsburg",
+          "birthday": "2019-02-13",
+          "breed": "Bulldog",
+          "sex": "male",
+          "location": "stets",
+          "price": 2333330,
+          "comment": "stets stets, like stets play stets stets stets",
+          "noticeImage": "http://img/dogs/bulldog",
+          "owner": "6462610994b8883816790126"
+        }
+      },
+      "NewsObjectResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Mongodb objectId"
+          },
+          "imgUrl": {
+            "type": "string",
+            "description": "Image url"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title"
+          },
+          "text": {
+            "type": "string",
+            "description": "Text"
+          },
+          "date": {
+            "type": "string",
+            "description": "Date in ISO format"
+          },
+          "url": {
+            "type": "string",
+            "description": "News url"
+          },
+          "id": {
+            "type": "string",
+            "description": "News id"
+          }
+        }
+      },
+      "PartnersObjectResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Mongodb objectId"
+          },
+          "title": {
+            "type": "string",
+            "description": "Title"
+          },
+          "url": {
+            "type": "string",
+            "description": "Partner website url"
+          },
+          "addressUrl": {
+            "type": "string",
+            "description": "Partner adress aurl on google maps"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "Image url"
+          },
+          "address": {
+            "type": "string",
+            "description": "Text"
+          },
+          "workDays": {
+            "type": "array",
+            "description": "array of 7 business days objects",
+            "items": {
+              "type": "object",
+              "description": "Day object",
+              "properties": {
+                "isOpen": {
+                  "type": "boolean",
+                  "description": "open or not"
+                },
+                "from": {
+                  "type": "string",
+                  "description": "opening time"
+                },
+                "to": {
+                  "type": "string",
+                  "description": "closing time"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "securitySchemes": {
