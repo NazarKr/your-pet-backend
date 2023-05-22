@@ -197,6 +197,11 @@ const userRefresh = async (req, res) => {
     const accesToken = jwt.sign(payload, ACCES_SECRET, { expiresIn: '2m' });
     const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: '7d' });
 
+    await User.findByIdAndUpdate(user._id, {
+      accesToken,
+      refreshToken,
+    });
+
     res.status(200).json({ accesToken, refreshToken });
   } catch (error) {
     throw httpError(403, error.message);

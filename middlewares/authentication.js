@@ -18,7 +18,7 @@ const authentication = async (req, res, next) => {
 
     const user = await User.findById(response._id);
 
-    if (!user || !user.accesToken) {
+    if (!user) {
       next(httpError(401));
     }
     req.user = user;
