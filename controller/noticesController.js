@@ -10,7 +10,10 @@ const listAllNotice = async (req, res) => {
   const result = await Notice.find({}, '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
-  });
+  }).populate(
+    'owner',
+    '-token -password -favorite -verify -verifycationToken -createdAt -updatedAt'
+  );
 
   const total = await Notice.countDocuments();
 
@@ -42,6 +45,9 @@ const findNotices = async (req, res) => {
       skip: skipPages(page, limit),
       limit,
     }
+  ).populate(
+    'owner',
+    '-token -password -favorite -verify -verifycationToken -createdAt -updatedAt'
   );
 
   const total = await Notice.countDocuments({
@@ -103,7 +109,10 @@ const getNoticeByCategory = async (req, res) => {
   const result = await Notice.find(filters, '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
-  });
+  }).populate(
+    'owner',
+    '-token -password -favorite -verify -verifycationToken -createdAt -updatedAt'
+  );
 
   const total = await Notice.countDocuments(filters);
 
@@ -134,7 +143,7 @@ const getNoticeById = async (req, res) => {
 
   const result = await Notice.findById(_id, '-createdAt -updatedAt').populate(
     'owner',
-    ' -_id -password -token -verifycationToken -createdAt -updatedAt'
+    '-token -password -favorite -verify -verifycationToken -createdAt -updatedAt'
   );
 
   if (!result) {
@@ -194,7 +203,17 @@ const allFavorite = async (req, res) => {
     fields: {
       favorite: 1,
     },
-  }).populate('favorite', '-createdAt -updatedAt');
+  }).populate({
+    path: 'favorite',
+    model: Notice,
+    select: '-createdAt -updatedAt',
+    populate: {
+      path: 'owner',
+      model: User,
+      select:
+        '-token -password -favorite -verify -verifycationToken -createdAt -updatedAt',
+    },
+  });
 
   if (result.favorite.length === 0) {
     throw httpError(404, `Favorite notices list is empty`);
