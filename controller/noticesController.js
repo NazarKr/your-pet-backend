@@ -255,7 +255,7 @@ const deleteNotice = async (req, res) => {
   const { id: _id } = req.params;
   const { _id: owner } = req.user;
 
-  const result = await Notice.find({ _id, owner });
+  const result = await Notice.findByIdAndDelete({ _id });
 
   if (!result) {
     throw httpError(404, `Notice not found`);
