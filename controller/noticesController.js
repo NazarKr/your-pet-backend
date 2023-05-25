@@ -271,14 +271,22 @@ const deleteNotice = async (req, res) => {
  */
 const myNotices = async (req, res) => {
   const { _id: owner } = req.user;
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10, query = null } = req.query;
 
-  const result = await Notice.find({ owner }, '-createdAt -updatedAt', {
+  const filter = () => {
+    if (query === null) {
+      return { owner };
+    }
+
+    return { owner, $text: { $search: query } };
+  };
+
+  const result = await Notice.find(filter(), '-createdAt -updatedAt', {
     skip: skipPages(page, limit),
     limit,
   });
 
-  const total = await Notice.countDocuments({ owner });
+  const total = await Notice.countDocuments(filter());
 
   if (result.length === 0) {
     throw httpError(404, `User did not create notices`);
