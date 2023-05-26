@@ -615,6 +615,13 @@
         "security": [{ "Bearer": [] }],
         "parameters": [
           {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "schema": {
