@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise;
 const { PORT = 3001, DB_HOST, DB_HOST_TEST, RENDER_BASE_URL } = process.env;
 
 mongoose
-  .connect(DB_HOST_TEST, {
+  .connect(DB_HOST, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
