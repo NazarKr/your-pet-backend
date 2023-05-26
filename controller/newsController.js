@@ -28,22 +28,30 @@ const getAllNews = async (req, res) => {
  * ============================ Поиск новостей
  */
 const findNews = async (req, res) => {
-  const { query = null } = req.query;
+  const { query = null, page = 1, limit = 10 } = req.query;
 
   if (!query) {
     throw httpError(400, 'Query parameter required');
   }
 
-  const news = await Article.find(
-    { $text: { $search: query } },
-    { score: { $meta: 'textScore' } }
-  ).sort({ score: { $meta: 'textScore' } });
+  const skip = (page - 1) * limit;
+
+  const news = await Article.find({ $text: { $search: query } }, '', {
+    skip,
+    limit,
+  });
+
+  const total = await Article.countDocuments({ $text: { $search: query } });
 
   if (!news) {
     throw httpError(404);
   }
 
-  res.status(200).json(news);
+  res.status(200).json({
+    data: news,
+    currentPage: page,
+    totalPages: totalPages(total, limit),
+  });
 };
 
 module.exports = {
