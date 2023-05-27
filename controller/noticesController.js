@@ -53,7 +53,8 @@ const getNoticeByCategory = async (req, res) => {
   const {
     page = 1,
     limit = 10,
-    sex = null,
+    male = null,
+    female = null,
     minage = null,
     maxage = null,
   } = req.query;
@@ -67,8 +68,12 @@ const getNoticeByCategory = async (req, res) => {
 
   const filters = { category };
 
-  if (sex) {
-    filters.sex = sex;
+  if (male) {
+    filters.male = 'male';
+  }
+
+  if (female) {
+    filters.female = 'female';
   }
 
   const birthday = {};
